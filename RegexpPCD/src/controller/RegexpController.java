@@ -5,7 +5,8 @@ package controller;
  *
  */
 public interface RegexpController {
-	void setFilePath(String path);
+	void setStartPath(String path);
 	void setMaxDepthNavigation(int maxDepth);
+	void setPattern(String regex);
 	void search();
 }

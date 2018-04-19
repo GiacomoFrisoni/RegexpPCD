@@ -1,5 +1,7 @@
 package main;
 
+import controller.RegexpController;
+import controller.RegexpControllerImpl;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import view.RegexpView;
@@ -10,11 +12,9 @@ public class RegexpMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {		
 		final RegexpView view = new RegexpViewImpl(primaryStage);
-		//TODO controller and eventually model
-		
-		view.setController(null);
+		final RegexpController controller = new RegexpControllerImpl(view);
+		view.setController(controller);
 		view.show();
-		
 	}
 	
 	public static void main(final String[] args) {
