@@ -13,10 +13,6 @@
 	/*@SuppressWarning*/ specialButtonColorHover: derive(specialButtonColor, +15%);
 	/*@SuppressWarning*/ specialButtonColorPressed: derive(specialButtonColorHover, +15%);
 	
-	/*@SuppressWarning*/ buttonRed: #FF2222;
-	/*@SuppressWarning*/ buttonRedHover: derive(buttonRed, +15%);
-	/*@SuppressWarning*/ buttonRedPressed: derive(buttonRedHover, +15%);
-	
 	/*@SuppressWarning*/ progressColor: #4286f4;
 	
 }
@@ -25,13 +21,17 @@
 	-fx-background-color: backgroundColor;
 }
 
-.hbox {
+/* .hbox {
 	-fx-background-color: backgroundColorDark;
-}
-
+}*/
 
 .label {
 	-fx-text-fill: white;
+	-fx-font-style: normal;
+}
+
+#footer {
+	-fx-background-color: backgroundColorDark;
 }
 
 #titleLabel {
@@ -43,7 +43,7 @@
 	-fx-border-width: 0;
 }
 
-#errorLabel {
+.errorLabel {
 	-fx-text-fill: red;
 	-fx-font-style: italic;
 }
@@ -78,20 +78,6 @@
 #specialButton:pressed, #specialButton:default:hover:pressed {
 	-fx-background-color: specialButtonColorPressed;
 }
-
-#specialButtonRed {
-	-fx-background-color: buttonRed;
-	-fx-padding: 10 25 10 25; 
-}
-
-#specialButtonRed:hover {
-	-fx-background-color: buttonRedHover;
-}
-
-#specialButtonRed:pressed, #specialButtonRed:default:hover:pressed {
-	-fx-background-color: buttonRedPressed;
-}
-
 
 .progress-bar > .bar {
 	-fx-background-color: progressColor;

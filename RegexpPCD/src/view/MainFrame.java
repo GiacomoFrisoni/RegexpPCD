@@ -1,10 +1,13 @@
 package view;
 
+import java.io.File;
+
 import controller.RegexpController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -27,7 +30,10 @@ public class MainFrame extends VBox {
 	private Button choosePath, startStop;
 	
 	@FXML
-	private Label errorLabel;
+	private Label statusLabel;
+	
+	@FXML
+	private ProgressIndicator progress;
 	
 	
 	
@@ -70,21 +76,46 @@ public class MainFrame extends VBox {
         choosePath.setOnMouseClicked(e -> {
 			final DirectoryChooser chooser = new DirectoryChooser();
 			chooser.setTitle(CHOOSE_FOLDER_TITLE);
-			final String path = chooser.showDialog(this.window).getAbsolutePath();
-			
-			if (path != null) {
-				this.path.setText(path);
+			final File pathFile = chooser.showDialog(this.window);
+						
+			if (pathFile != null) {
+				this.path.setText(pathFile.getAbsolutePath());
 			}		
+			setError("ERrore");
 		});
         
         startStop.setOnMouseClicked(e -> {
-			this.choosePath.setDisable(true);
+			//this.choosePath.setDisable(true);
 			this.path.setDisable(true);
 			this.regularExpression.setDisable(true);
-			this.depth.setDisable(true);
-			this.startStop.setText("Stop searching");
-			this.startStop.setId("specialButtonRed");
+			//this.depth.setDisable(true);
+			this.startStop.setText("Searching");
+			setLoading();
 		});
     }
+	
+	private void setIdle() {
+		this.statusLabel.getStyleClass().remove("errorLabel");
+		this.statusLabel.setText("Idle");
+		
+		this.progress.setVisible(false);
+		this.progress.setManaged(false);
+	}
+	
+	private void setLoading() {
+		this.statusLabel.getStyleClass().remove("errorLabel");
+		this.statusLabel.setText("Searching...");
+		
+		this.progress.setVisible(true);
+		this.progress.setManaged(true);
+	}
+	
+	private void setError(String error) {
+		this.statusLabel.getStyleClass().add("errorLabel");
+		this.statusLabel.setText(error);
+		
+		this.progress.setVisible(false);
+		this.progress.setManaged(false);
+	}
 
 }
