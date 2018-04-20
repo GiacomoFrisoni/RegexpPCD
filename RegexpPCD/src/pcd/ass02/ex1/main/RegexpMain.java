@@ -1,11 +1,11 @@
-package main;
+package pcd.ass02.ex1.main;
 
-import controller.RegexpController;
-import controller.RegexpControllerImpl;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import view.RegexpView;
-import view.RegexpViewImpl;
+import pcd.ass02.ex1.controller.RegexpController;
+import pcd.ass02.ex1.controller.RegexpControllerImpl;
+import pcd.ass02.ex1.view.RegexpView;
+import pcd.ass02.ex1.view.RegexpViewImpl;
 
 public class RegexpMain extends Application {
 	

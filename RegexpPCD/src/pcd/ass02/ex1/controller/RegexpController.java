@@ -1,4 +1,4 @@
-package controller;
+package pcd.ass02.ex1.controller;
 
 /**
  * This class represents the controller of the application.

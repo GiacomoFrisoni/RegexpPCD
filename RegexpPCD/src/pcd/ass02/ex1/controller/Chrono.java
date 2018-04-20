@@ -1,4 +1,4 @@
-package controller;
+package pcd.ass02.ex1.controller;
 
 /**
  * This class handles a custom timer.

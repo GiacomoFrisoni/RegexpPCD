@@ -1,4 +1,4 @@
-package controller;
+package pcd.ass02.ex1.controller;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import view.RegexpView;
+import pcd.ass02.ex1.view.RegexpView;
 
 public class RegexpControllerImpl implements RegexpController {
 

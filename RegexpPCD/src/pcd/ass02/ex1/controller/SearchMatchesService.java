@@ -1,4 +1,4 @@
-package controller;
+package pcd.ass02.ex1.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +14,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
 
-import model.SearchFileResult;
-import view.RegexpView;
+import pcd.ass02.ex1.model.SearchFileResult;
+import pcd.ass02.ex1.view.RegexpView;
 
 public class SearchMatchesService extends Thread {
 	

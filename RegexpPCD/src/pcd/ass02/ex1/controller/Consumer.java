@@ -1,10 +1,10 @@
-package controller;
+package pcd.ass02.ex1.controller;
 
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 
-import model.SearchFileResult;
-import view.RegexpView;
+import pcd.ass02.ex1.model.SearchFileResult;
+import pcd.ass02.ex1.view.RegexpView;
 
 public class Consumer extends Thread {
 

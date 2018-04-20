@@ -1,8 +1,7 @@
-package view;
+package pcd.ass02.ex1.view;
 
 import java.io.File;
 
-import controller.RegexpController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -12,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
+import pcd.ass02.ex1.controller.RegexpController;
 
 public class MainFrame extends VBox {
 	

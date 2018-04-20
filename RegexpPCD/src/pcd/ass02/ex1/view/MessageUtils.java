@@ -1,4 +1,4 @@
-package view;
+package pcd.ass02.ex1.view;
 
 import java.util.function.Consumer;
 

@@ -1,4 +1,4 @@
-package controller;
+package pcd.ass02.ex1.controller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,8 +6,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import model.Document;
-import model.SearchFileResult;
+import pcd.ass02.ex1.model.Document;
+import pcd.ass02.ex1.model.SearchFileResult;
 
 public class SearchMatchesInFileTask implements Runnable {
 

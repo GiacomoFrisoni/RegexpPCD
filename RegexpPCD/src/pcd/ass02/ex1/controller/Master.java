@@ -1,4 +1,4 @@
-package controller;
+package pcd.ass02.ex1.controller;
 
 import java.io.File;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import model.SearchFileResult;
+import pcd.ass02.ex1.model.SearchFileResult;
 
 public class Master {
 
