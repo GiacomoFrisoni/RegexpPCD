@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 
 import model.SearchFileResult;
@@ -30,11 +31,15 @@ public class Consumer extends Thread {
 			try {
 				res = this.queue.take();
 				nComputedFiles++;
-				int nMatches = res.getNumberOfMatches();
-				if (nMatches > 0) {
-					this.leastOneMatchRate++;
+				final Optional<Integer> nMatches = res.getNumberOfMatches();
+				if (nMatches.isPresent()) {
+					if (nMatches.get() > 0) {
+						this.leastOneMatchRate++;
+					}
+					this.meanNumberOfMatches += (nMatches.get() - this.meanNumberOfMatches) / nComputedFiles;
+				} else {
+					// notify view file not found
 				}
-				this.meanNumberOfMatches += (nMatches - this.meanNumberOfMatches) / nComputedFiles;
 				// view
 			} catch (InterruptedException ie) {
 				//view.showAlert("Thread error", "Someone killed the consumer when was waiting for something. Please reset.\n\n" + ie.getMessage());
