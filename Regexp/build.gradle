@@ -1,0 +1,27 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'com.github.johnrengelman.shadow' version '2.0.1'
+}
+
+ext {
+	vertxVersion = '3.5.0'
+}
+
+repositories {
+	mavenLocal()
+	jcenter()
+	maven { url "https://plugins.gradle.org/m2/" }
+}
+
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+dependencies {
+	compile "io.vertx:vertx-core:$vertxVersion"
+	compile "io.vertx:vertx-unit:$vertxVersion"
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '4.0'
+}
