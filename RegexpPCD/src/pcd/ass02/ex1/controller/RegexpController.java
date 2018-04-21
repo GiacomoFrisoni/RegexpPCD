@@ -1,11 +1,12 @@
-package controller;
+package pcd.ass02.ex1.controller;
 
 /**
  * This class represents the controller of the application.
  *
  */
 public interface RegexpController {
-	void setFilePath(String path);
+	void setStartPath(String path);
 	void setMaxDepthNavigation(int maxDepth);
+	void setPattern(String regex);
 	void search();
 }

@@ -1,6 +1,6 @@
-package view;
+package pcd.ass02.ex1.view;
 
-import controller.RegexpController;
+import pcd.ass02.ex1.controller.RegexpController;
 
 public interface RegexpView {
 

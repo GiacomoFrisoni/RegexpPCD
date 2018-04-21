@@ -1,11 +1,11 @@
-package view;
+package pcd.ass02.ex1.view;
 
-import controller.RegexpController;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import pcd.ass02.ex1.controller.RegexpController;
 
 public class RegexpViewImpl implements RegexpView {
 	
