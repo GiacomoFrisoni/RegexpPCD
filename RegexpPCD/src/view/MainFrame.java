@@ -85,11 +85,11 @@ public class MainFrame extends VBox {
 		});
         
         startStop.setOnMouseClicked(e -> {
-			//this.choosePath.setDisable(true);
+			this.choosePath.setDisable(true);
 			this.path.setDisable(true);
 			this.regularExpression.setDisable(true);
-			//this.depth.setDisable(true);
-			this.startStop.setText("Searching");
+			this.depth.setDisable(true);
+			this.startStop.setDisable(true);
 			setLoading();
 		});
     }

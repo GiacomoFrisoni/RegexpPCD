@@ -15,5 +15,8 @@ public interface RegexpView {
 	 * Load and show the window for the user
 	 */
 	public void show();
+	
+	public void updateMeanPercentage(String percentage);
+	public void updateTotalScannedFiles(String total);
 
 }
