@@ -25,7 +25,7 @@
 	-fx-background-color: backgroundColorDark;
 }*/
 
-.label {
+.label, .check-box {
 	-fx-text-fill: white;
 	-fx-font-style: normal;
 }
@@ -94,4 +94,8 @@
     -fx-background-radius: 0;
     -fx-border-color: transparent;
     -fx-border-radius: 0;
+}
+
+.table-view .column-header-background .label{
+    -fx-text-fill: backgroundColorDark;
 }

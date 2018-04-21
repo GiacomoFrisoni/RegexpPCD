@@ -9,8 +9,11 @@ import javafx.scene.control.Alert.AlertType;
 
 public class MessageUtils {
 	
-	public static final String FXML_ERROR_LOADING_HEADER = "FXML Loading Exception";
-	public static final String FXML_ERROR_LOADING_MESSAGE = "could not be loaded";
+	public static final String ERROR_TITLE = "Error";
+	public static final String FXML_ERROR_HEADER = "FXML Loading Exception";
+	public static final String FXML_ERROR_MESSAGE = "could not be loaded";
+	
+	public static final String THREAD_ERROR_HEADER = "Thread Exception";
 	
 	/**
 	 * Show a dialog. Thread-Safe (using Platform.runLater)
@@ -34,9 +37,11 @@ public class MessageUtils {
 		
 		String msg = message;
 		
-		if (!additional.isEmpty()) {
-			msg += "\n";
-			msg += additional;
+		if (additional != null) {
+			if (!additional.isEmpty()) {
+				msg += "\n";
+				msg += additional;
+			}
 		}
 		
 		alert.setContentText(msg);
@@ -47,36 +52,13 @@ public class MessageUtils {
 			else
 				alert.showAndWait();
 		});
-
-	}
-
-	/**
-	 * Simple method to show and error message and kill the app
-	 * @param header
-	 * 		main cause of the error (short!)
-	 * @param message
-	 * 		user-friendly message of the error
-	 * @param exception
-	 * 		real error message
-	 */
-	public static void showExceptionAndExit(final String header, final String message, final String exception) {
-		showMessage(AlertType.ERROR, "ERROR", header, message, exception, r -> System.exit(0));		
 	}
 	
-	/**
-	 * Simple method to show a simple error message and kill the app
-	 * @param header
-	 * 		main cause of the error (short!)
-	 * @param message
-	 * 		user-friendly message of the error
-	 */
-	public static void showExceptionAndExit(final String header, final String message) {
-		showExceptionAndExit(header, message, "");
+	public static void showFXMLException(final String component, Exception e) {
+		showMessage(AlertType.ERROR, ERROR_TITLE, FXML_ERROR_HEADER, component + " " + FXML_ERROR_MESSAGE, e.getMessage(), null);
 	}
 	
-	public static void showFXMLException(final String root, Exception e) {
-		showExceptionAndExit(FXML_ERROR_LOADING_HEADER, 
-							 root + " " + FXML_ERROR_LOADING_MESSAGE, 
-							 e.getMessage());
+	public static void showThreadExcpetion(final String message, Exception e) {
+		showMessage(AlertType.ERROR, ERROR_TITLE, THREAD_ERROR_HEADER, message, e.getMessage(), null);
 	}
 }
