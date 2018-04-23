@@ -54,13 +54,13 @@ public class Consumer extends Thread {
 						this.nLeastOneMatch++;
 						// Updates the mean number of matches among files with matches
 						double tmp = this.meanNumberOfMatches;
-						this.meanNumberOfMatches += (nMatches.get() - tmp) / nComputedFiles;
+						this.meanNumberOfMatches += (nMatches.get() - tmp) / this.nLeastOneMatch;
 					}
 					// Shows file result on view
-					this.view.addResult(res.getPath().toString(), nMatches.get());
+					this.view.showResult(res.getPath().toString(), nMatches.get());
 				} else {
 					// Shows file result on view
-					this.view.addResult(res.getPath().toString(), res.getMessage().get());
+					this.view.showResult(res.getPath().toString(), res.getMessage().get());
 				}
 				// Shows statistics on view
 				this.view.showMeanNumberOfMatches(this.meanNumberOfMatches);
@@ -71,8 +71,6 @@ public class Consumer extends Thread {
 				this.view.showThreadException("Someone interrupted the consumer when was waiting for something", ie);
 			}	
 		}
-
-		System.out.println(nComputedFiles);
 	}
 	
 }

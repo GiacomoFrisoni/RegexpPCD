@@ -5,78 +5,86 @@ import pcd.ass02.ex1.controller.RegexpController;
 public interface RegexpView {
 
 	/**
-	 * Set the controller for the view
+	 * Sets the controller for the view.
+	 * 
 	 * @param controller
 	 * 		controller for the view
 	 */
-	public void setController(RegexpController controller);
+	void setController(RegexpController controller);
 	
 	/**
-	 * Load and show the window for the user
+	 * Loads and show the window for the user.
 	 */
-	public void show();
+	void show();
 	
 	/**
-	 * Displays the percentage of files that have at least one match
-	 * @param percentage
-	 * 		percentage to show (0-100)
-	 */
-	public void showLeastOneMatchPercentage(final double percentage);
-	
-	/**
-	 * Displays the mean number of matches among file with matches
-	 * @param mean
-	 * 		the mean number of matches
-	 */
-	public void showMeanNumberOfMatches(final double mean);
-	
-	/**
-	 * Set the number of files that has been successfully scanned at this moment
-	 * @param scanned
-	 * 		number of files successfully scanned
-	 */
-	public void setNumberOfScannedFiles(final int scanned);
-	
-	/**
-	 * Set the total number of files to scan
+	 * Sets the total number of files to scan.
+	 * 
 	 * @param total
 	 * 		number of files to scan
 	 */
-	public void setTotalFilesToScan(final int total);
+	void setTotalFilesToScan(int total);
 	
 	/**
-	 * Add a result to the total results
-	 * @param path
-	 * 		path to the file scanned
-	 * @param result
-	 * 		result of matches
+	 * Sets the number of files that has been successfully scanned at this moment.
+	 * 
+	 * @param scanned
+	 * 		number of files successfully scanned
 	 */
-	public void addResult(final String path, final int matches);
+	void setNumberOfScannedFiles(int scanned);
 	
 	/**
-	 * Add a result to the total results
+	 * Displays the percentage of files that have at least one match.
+	 * 
+	 * @param percentage
+	 * 		percentage to show (0-100)
+	 */
+	void showLeastOneMatchPercentage(double percentage);
+	
+	/**
+	 * Displays the mean number of matches among file with matches.
+	 * 
+	 * @param mean
+	 * 		the mean number of matches
+	 */
+	void showMeanNumberOfMatches(double mean);
+	
+	/**
+	 * Shows a file pattern research result.
+	 * 
 	 * @param path
-	 * 		path to the file scanned
+	 * 		path to the scanned file
+	 * @param nMatches
+	 * 		number of matches in the file
+	 */
+	void showResult(String path, int nMatches);
+	
+	/**
+	 * Shows a file pattern research result.
+	 * 
+	 * @param path
+	 * 		path to the scanned file
 	 * @param error
 	 * 		error occurred during the scanning process
 	 */
-	public void addResult(final String path, final String error);
+	void showResult(String path, String error);
 	
 	/**
-	 * Show an exception when something went wrong with a thread
+	 * Shows an exception when something went wrong with a thread.
+	 * 
 	 * @param message
 	 * 		message to show
 	 * @param e
 	 * 		exception that occurred
 	 */
-	public void showThreadException(final String message, final Exception e);
-	
+	void showThreadException(String message, Exception e);
 	
 	/**
-	 * Show a small non-invasive error message if the input was incorrect
+	 * Shows a small non-invasive error message if the input was incorrect.
+	 * 
 	 * @param message
 	 * 		short message to show on the screen
 	 */
-	public void showInputError(final String message);
+	void showInputError(String message);
 
 }

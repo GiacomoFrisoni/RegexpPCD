@@ -38,8 +38,11 @@ public class MainFrame extends VBox {
 	private static final String REGEX_EMPTY_MESSAGE = "Regular Expression shouldn't be empty";
 	private static final String DEPTH_EMPTY_MESSAGE = "Max depth should be default or non empty";
 	private static final String DEPTH_ERROR_MESSAGE = "Depth is not a number";
+	
 	private static final String PATH_COLUMN_TITLE = "Path";
 	private static final String VALUE_COLUMN_TITLE = "Value";
+	private static final String PATH_PROPERTY_NAME = "path";
+	private static final String VALUE_PROPERTY_NAME = "value";
 	
 	private static final String DECIMAL_FORMAT_PATTERN = "0.00";
 	
@@ -47,7 +50,7 @@ public class MainFrame extends VBox {
 	private final Window window;
 	private final DecimalFormat decimalFormat;
 	private int totalFilesToScan = 0;
-	private ObservableList<RowType> rows = FXCollections.observableArrayList();	//TODO move to controller
+	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 	
 	@FXML
 	private TextField path, regularExpression, depth;
@@ -71,7 +74,14 @@ public class MainFrame extends VBox {
 	private TableView<RowType> tableView;
 	
 	
-	
+	/**
+	 * Constructs a new MainFrame.
+	 * 
+	 * @param controller
+	 * 		the controller of the application
+	 * @param window
+	 * 		the window in which display the frame
+	 */
 	public MainFrame(final RegexpController controller, final Window window) {
 		//Set some references
 		this.controller = controller;
@@ -107,7 +117,6 @@ public class MainFrame extends VBox {
 			final DirectoryChooser chooser = new DirectoryChooser();
 			chooser.setTitle(CHOOSE_FOLDER_TITLE);
 			final File pathFile = chooser.showDialog(this.window);
-						
 			if (pathFile != null) {
 				this.path.setText(pathFile.getAbsolutePath());
 			}		
@@ -116,7 +125,7 @@ public class MainFrame extends VBox {
         //Starting computation
         this.start.setOnMouseClicked(e -> {
         	//Check if inputs are not empty / correct
-        	if (checkInputs()) {    	
+        	if (checkInputs()) {
         		//Disable some views
         		Platform.runLater(() -> {
         			this.choosePath.setDisable(true);
@@ -149,28 +158,34 @@ public class MainFrame extends VBox {
     }
 	
 	/**
-	 * Set the view to the idle state
+	 * Sets the view to the idle state.
 	 */
 	public void setIdle() {
 		this.changeStatus(IDLE_MESSAGE, false, false);
 	}
 	
 	/**
-	 * Set the view to the searching
+	 * Sets the view to the searching.
 	 */
 	public void setSearching() {
 		this.changeStatus(SEARCHING_MESSAGE, true, false);
 	}
 	
 	/**
-	 * Set the view to show an error message
+	 * Sets the view to show an error message.
+	 * 
+	 * @param message
+	 * 		the message to display
 	 */
 	public void setError(final String message) {
 		this.changeStatus(message, false, true);
 	}
 	
 	/**
-	 * Set the label to show percentage of files with least one match
+	 * Sets the label to show percentage of files with least one match.
+	 * 
+	 * @param percentage
+	 * 		the percentage of file with least one match
 	 */
 	public void showLeastOneMatchPercentage(final double percentage) {
 		Platform.runLater(() -> {
@@ -179,7 +194,10 @@ public class MainFrame extends VBox {
 	}
 	
 	/**
-	 * Set the label to show the mean number of matches
+	 * Sets the label to show the mean number of matches.
+	 * 
+	 * @param mean
+	 * 		the mean number of matches
 	 */
 	public void showMeanNumberOfMatches(final double mean) {
 		Platform.runLater(() -> {
@@ -188,34 +206,60 @@ public class MainFrame extends VBox {
 	}
 	
 	/**
-	 * Set the label and progress showing files to scan
+	 * Sets the total numbers of files to scan.
+	 * 
+	 * @param total
+	 * 		the total numbers of files
 	 */
 	public void setTotalFilesToScan(final int total) {
 		this.totalFilesToScan = total;
 		Platform.runLater(() -> {
 			this.totalToScan.setText("" + this.totalFilesToScan);
+			// Resets the progress bar
 			this.progressBar.setProgress(0);
 		});
 	}
 	
 	/**
-	 * Set the number of scanned files, updating the progress bar
+	 * Sets the number of scanned files.
+	 * 
+	 * @param nScanned
+	 * 		the number of analyzed files
 	 */
-	public void setNumberOfScannedFiles(final int scanned) {
+	public void setNumberOfScannedFiles(final int nScanned) {
 		Platform.runLater(() -> {
-			this.currentScanned.setText("" + scanned);
-			this.progressBar.setProgress(scanned/this.totalFilesToScan);
+			this.currentScanned.setText("" + nScanned);
+			// Updates the progress bar
+			this.progressBar.setProgress(nScanned/this.totalFilesToScan);
 		});
 	}
 	
-	//TODO move to controller
-	public void addResult(final String path, final int value) {
-		rows.add(new RowType(path, "" + value));
+	/**
+	 * Adds a row into the result table.
+	 * 
+	 * @param path
+	 * 		the path of the scanned file
+	 * @param nMatches
+	 * 		the number of matches in the file
+	 */
+	public void addResult(final String path, final int nMatches) {
+		resultRows.add(new RowType(path, "" + nMatches));
+		// Scrolls to the bottom
+		Platform.runLater(() -> this.tableView.scrollTo(this.resultRows.size() - 1));
 	}
 	
-	//TODO move to controller
-	public void addResult(final String path, final String value) {
-		rows.add(new RowType(path, value));
+	/**
+	 * Adds a row into the result table.
+	 * 
+	 * @param path
+	 * 		the path of the scanned file
+	 * @param message
+	 * 		the message to display
+	 */
+	public void addResult(final String path, final String message) {
+		resultRows.add(new RowType(path, message));
+		// Scrolls to the bottom
+		Platform.runLater(() -> this.tableView.scrollTo(this.resultRows.size() - 1));
 	}
 
 	private void changeStatus(final String message, final boolean isSearching, final boolean isError) {
@@ -281,8 +325,8 @@ public class MainFrame extends VBox {
 		tcValue.setPrefWidth(150.0d);
 		
 		//What they'll contain
-		tcPath.setCellValueFactory(new PropertyValueFactory<RowType, String>("path"));
-		tcValue.setCellValueFactory(new PropertyValueFactory<RowType, String>("value"));
+		tcPath.setCellValueFactory(new PropertyValueFactory<RowType, String>(PATH_PROPERTY_NAME));
+		tcValue.setCellValueFactory(new PropertyValueFactory<RowType, String>(VALUE_PROPERTY_NAME));
 		
 		//Stretch the first column
 		tcPath.prefWidthProperty().bind(
@@ -295,6 +339,7 @@ public class MainFrame extends VBox {
 		this.tableView.getColumns().add(tcValue);
 		
 		//Bind to observable collection
-		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(rows));
+		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(resultRows));
 	}
+	
 }

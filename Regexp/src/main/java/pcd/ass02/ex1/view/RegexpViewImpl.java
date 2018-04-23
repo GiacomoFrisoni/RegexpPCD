@@ -51,6 +51,15 @@ public class RegexpViewImpl implements RegexpView {
 		this.stage.show();	
 	}
 
+	@Override
+	public void setTotalFilesToScan(final int total) {
+		this.mainFrame.setTotalFilesToScan(total);
+	}
+	
+	@Override
+	public void setNumberOfScannedFiles(final int scanned) {
+		this.mainFrame.setNumberOfScannedFiles(scanned);
+	}
 
 	@Override
 	public void showLeastOneMatchPercentage(final double percentage) {
@@ -62,27 +71,13 @@ public class RegexpViewImpl implements RegexpView {
 		this.mainFrame.showMeanNumberOfMatches(mean);
 	}
 
-
 	@Override
-	public void setNumberOfScannedFiles(final int scanned) {
-		this.mainFrame.setNumberOfScannedFiles(scanned);
-	}
-
-
-	@Override
-	public void setTotalFilesToScan(final int total) {
-		this.mainFrame.setTotalFilesToScan(total);
-	}
-
-
-	@Override
-	public void addResult(final String path, final int matches) {
+	public void showResult(final String path, final int matches) {
 		this.mainFrame.addResult(path, matches);
 	}
 
-
 	@Override
-	public void addResult(final String path, final String error) {
+	public void showResult(final String path, final String error) {
 		this.mainFrame.addResult(path, error);
 	}
 	

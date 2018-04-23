@@ -1,7 +1,7 @@
 package pcd.ass02.ex1.controller;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +45,7 @@ public class SearchMatchesInFileTask implements Runnable {
 	        while (matcher.find())
 	        	nMatches++;
 			this.queue.add(new SearchFileResult(this.file.toPath(), nMatches));
-		} catch (final FileNotFoundException e) {
+		} catch (final IOException e) {
 			this.queue.add(new SearchFileResult(this.file.toPath(), e.getLocalizedMessage()));
 		}
 	}

@@ -32,6 +32,8 @@ public interface RegexpController {
 	
 	/**
 	 * Starts the pattern matches research.
+	 * 
+	 * @return true if the operation is successful, false otherwise
 	 */
 	boolean search();
 	

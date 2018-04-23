@@ -24,7 +24,7 @@ import pcd.ass02.ex1.view.RegexpView;
  */
 public class SearchMatchesService extends Thread {
 	
-	private final Path startPath;
+	private final Path startingPath;
 	private final Pattern pattern;
 	private final int maxDepth;
 	private final RegexpView view;
@@ -42,14 +42,17 @@ public class SearchMatchesService extends Thread {
 	 * @param view
 	 * 		the application view
 	 */
-	public SearchMatchesService(final Path startPath, final Pattern pattern, final int maxDepth, final RegexpView view) {
-		Objects.requireNonNull(startPath);
+	public SearchMatchesService(final Path startingPath, final Pattern pattern, final int maxDepth, final RegexpView view) {
+		Objects.requireNonNull(startingPath);
 		Objects.requireNonNull(pattern);
 		Objects.requireNonNull(view);
+		if (!Files.exists(startingPath)) {
+			throw new IllegalArgumentException("The starting path is not valid.");
+		}
 		if (maxDepth <= 0) {
 			throw new IllegalArgumentException("The max depth must not be negative.");
 		}
-		this.startPath = startPath;
+		this.startingPath = startingPath;
 		this.pattern = pattern;
 		this.maxDepth = maxDepth;
 		this.view = view;
@@ -61,7 +64,7 @@ public class SearchMatchesService extends Thread {
 		// Creates the collection of files in which to search for the pattern
 		final List<File> files = new ArrayList<>();
 		try {
-			Files.walkFileTree(this.startPath, Collections.emptySet(), this.maxDepth, new SimpleFileVisitor<Path>() {
+			Files.walkFileTree(this.startingPath, Collections.emptySet(), this.maxDepth, new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
 					if(!attrs.isDirectory()) {
@@ -76,9 +79,10 @@ public class SearchMatchesService extends Thread {
 				    return FileVisitResult.SKIP_SUBTREE;
 				}
 			});
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// notify view
 		}
+		// Tells to the view the total number of files
 		this.view.setTotalFilesToScan(files.size());
 		// Starts the results consumer on a new thread
 		new Consumer(this.queue, this.view, files.size()).start();
