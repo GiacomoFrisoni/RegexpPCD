@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.Double?>
+<?import java.lang.Integer?>
 
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
@@ -9,90 +10,101 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ProgressIndicator?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.ColumnConstraints?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml/1" type="VBox" stylesheets="@style.css" spacing="$margin">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="GridPane" stylesheets="@style.css" vgap="$margin">
 	<fx:define>
 		<Double fx:id="marginSmall" fx:value="5" />
 		<Double fx:id="margin" fx:value="15" />
 		<Double fx:id="marginBig" fx:value="20" />
 		<Double fx:id="smallWidth" fx:value="110" />
+		<Double fx:id="maxValue" fx:value="99999" />
+		<Integer fx:id="defaultValue" fx:value="0"/>
 	</fx:define>
 	
 	<padding>
 		<Insets bottom="$margin" left="$margin" right ="$margin" top="$margin"/>
 	</padding>
 	
+	<columnConstraints>
+		<ColumnConstraints hgrow="ALWAYS"></ColumnConstraints>
+	</columnConstraints>
 	
-	<HBox spacing="$marginBig" alignment="BOTTOM_CENTER">
-		<VBox HBox.hgrow="ALWAYS">
-			<Label text="Path"></Label>
-			<TextField fx:id="path" promptText="Path to the folder"></TextField>
-		</VBox>
-		<Button prefWidth="$smallWidth" maxWidth="$smallWidth" minWidth="$smallWidth" fx:id="choosePath">...</Button>
-	</HBox>
+	<rowConstraints>
+		<RowConstraints vgrow="NEVER" />
+		<RowConstraints vgrow="ALWAYS" />
+	</rowConstraints>
 	
-	
-	
-	<HBox spacing="$marginBig">
-		<VBox HBox.hgrow="ALWAYS">
-			<Label text="Regular Expression"></Label>
-			<TextField fx:id="regularExpression" promptText="Regular Expression"></TextField>
-		</VBox>
+	<VBox GridPane.rowIndex="0"  GridPane.columnIndex="0" spacing="$marginSmall">
+		<HBox spacing="$marginBig" alignment="BOTTOM_CENTER">
+			<VBox HBox.hgrow="ALWAYS">
+				<Label text="Path"></Label>
+				<TextField fx:id="path" promptText="Path to the folder"></TextField>
+			</VBox>
+			<Button prefWidth="$smallWidth" maxWidth="$smallWidth" minWidth="$smallWidth" fx:id="choosePath">...</Button>
+		</HBox>
+			
 		
-		<VBox prefWidth="$smallWidth" maxWidth="$smallWidth" minWidth="$smallWidth">
-			<Label text="Depth"></Label>
-			<TextField fx:id="depth">1</TextField>
-			<CheckBox  fx:id="maxDepth" selected="false" text="Max depth"></CheckBox>
-		</VBox>
-	</HBox>
-	
-	<VBox alignment="CENTER" spacing="$marginSmall">
-		<padding>
-			<Insets bottom="0.0" left="0.0" right ="0.0" top="$margin"/>
-		</padding>
+		<HBox spacing="$marginBig">
+			<VBox HBox.hgrow="ALWAYS">
+				<Label text="Regular Expression"></Label>
+				<TextField fx:id="regularExpression" promptText="Regular Expression"></TextField>
+			</VBox>
+			
+			<VBox prefWidth="$smallWidth" maxWidth="$smallWidth" minWidth="$smallWidth">
+				<Label text="Depth"></Label>
+				<TextField fx:id="depth">1</TextField>
+				<CheckBox  fx:id="maxDepth" selected="false" text="Max depth"></CheckBox>
+			</VBox>
+		</HBox>
 		
-		<Button fx:id="start" id="specialButton">Start Searching</Button>	
-		<HBox alignment="CENTER" spacing="5">
-			<ProgressIndicator fx:id="progress" prefWidth="15" prefHeight="15" visible="false" managed="false"></ProgressIndicator>
-			<Label fx:id="statusLabel" text="Idle"></Label>
-		</HBox>	
+		<VBox alignment="CENTER" spacing="$marginSmall">
+			<padding>
+				<Insets bottom="0.0" left="0.0" right ="0.0" top="$margin"/>
+			</padding>
+			
+			<Button fx:id="start" id="specialButton">Start Searching</Button>	
+			<HBox alignment="CENTER" spacing="5">
+				<ProgressIndicator fx:id="progress" prefWidth="15" prefHeight="15" visible="false" managed="false"></ProgressIndicator>
+				<Label fx:id="statusLabel" text="Idle"></Label>
+			</HBox>	
+		</VBox>
 	</VBox>
 	
-	
-
-	<VBox spacing="5">
-		<HBox spacing="30">
+	<VBox GridPane.rowIndex="1"  GridPane.columnIndex="0" spacing="5">
+		<HBox spacing="30" VBox.vgrow="NEVER">
 			<HBox spacing="5">
 				<Label text="Least one match percentage:"></Label>
-				<Label fx:id="leastOneMatchPercentage" text="32%"></Label>
+				<Label fx:id="leastOneMatchPercentage" text="$defaultValue"></Label>
 			</HBox>
 			
 			<HBox spacing="5">
 				<Label text="Mean number of matches:"></Label>
-				<Label fx:id="meanNumberOfMatches" text="3.5"></Label>
+				<Label fx:id="meanNumberOfMatches" text="$defaultValue"></Label>
 			</HBox>
 			
 			<HBox spacing="5">
 				<Label text="Total scanned:"></Label>
 				<HBox>
-					<Label fx:id="currentScanned" text="53"></Label>
+					<Label fx:id="currentScanned" text="$defaultValue"></Label>
 					<Label text="/"></Label>
-					<Label fx:id="totalToScan" text="236"></Label>
+					<Label fx:id="totalToScan" text="$defaultValue"></Label>
 				</HBox>
 				<Label text="files and folders"></Label>
 			</HBox>
 		</HBox>
 		
-		<VBox>
-			<ProgressBar VBox.vgrow="ALWAYS" fx:id="progressBar" maxWidth="9999"></ProgressBar>	
-			<TableView fx:id="tableView" editable="false"></TableView>
+		<VBox VBox.vgrow="ALWAYS"> 
+			<ProgressBar fx:id="progressBar" maxWidth="$maxValue"></ProgressBar>	
+			<TableView VBox.vgrow="ALWAYS" fx:id="tableView" editable="false"></TableView>
 		</VBox>
 	</VBox>
-
+	
 </fx:root>
 

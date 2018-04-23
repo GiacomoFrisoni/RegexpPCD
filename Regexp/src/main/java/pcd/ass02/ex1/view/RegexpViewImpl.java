@@ -43,7 +43,6 @@ public class RegexpViewImpl implements RegexpView {
 
 		this.stage.setTitle(WINDOW_TITLE);
 		this.stage.setScene(scene);
-		this.stage.setResizable(false);
 		this.stage.getIcons().addAll(
 				new Image(("file:res/icon16x16.png")),
 				new Image(("file:res/icon32x32.png")),
@@ -79,6 +78,11 @@ public class RegexpViewImpl implements RegexpView {
 	@Override
 	public void showResult(final String path, final String error) {
 		this.mainFrame.addResult(path, error);
+	}
+	
+	@Override
+	public void setFinish() {
+		this.mainFrame.setFinish();
 	}
 	
 	@Override

@@ -70,6 +70,11 @@ public interface RegexpView {
 	void showResult(String path, String error);
 	
 	/**
+	 * When computation is done, set the view to finished state
+	 */
+	void setFinish();
+	
+	/**
 	 * Shows an exception when something went wrong with a thread.
 	 * 
 	 * @param message

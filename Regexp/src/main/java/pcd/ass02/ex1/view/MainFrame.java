@@ -2,6 +2,7 @@ package pcd.ass02.ex1.view;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Comparator;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -20,24 +21,27 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Window;
+import javafx.stage.Stage;
 import pcd.ass02.ex1.controller.RegexpController;
 
-public class MainFrame extends VBox {
+public class MainFrame extends GridPane {//BorderPane {//VBox {
 	
-	private static final int WIDTH = 700;
-	private static final int HEIGHT = 300;
+	private static final int WIDTH = 800;
+	private static final int HEIGHT = 400;
 	
 	private static final String CHOOSE_FOLDER_TITLE = "Choose folder to scan";
 	private static final String IDLE_MESSAGE = "Idle";
 	private static final String SEARCHING_MESSAGE = "Searching...";
+	private static final String FINISH_MESSAGE = "Done!";
 	private static final String PERCENTAGE_SYMBOL = "%";
 	private static final String PATH_EMPTY_MESSAGE = "Path shouldn't be empty";
 	private static final String REGEX_EMPTY_MESSAGE = "Regular Expression shouldn't be empty";
 	private static final String DEPTH_EMPTY_MESSAGE = "Max depth should be default or non empty";
 	private static final String DEPTH_ERROR_MESSAGE = "Depth is not a number";
+	private static final String ILLEGAL_ARGUMENT_MESSAGE = "Total files to scan should be greater than 0";
+	private static final String ILLEGAL_STATE_MESSAGE = "Total files to scan is not set or is not greater than 0";
 	
 	private static final String PATH_COLUMN_TITLE = "Path";
 	private static final String VALUE_COLUMN_TITLE = "Value";
@@ -47,9 +51,9 @@ public class MainFrame extends VBox {
 	private static final String DECIMAL_FORMAT_PATTERN = "0.00";
 	
 	private final RegexpController controller;
-	private final Window window;
+	private final Stage window;
 	private final DecimalFormat decimalFormat;
-	private int totalFilesToScan = 0;
+	private double totalFilesToScan = 0.0;
 	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 	
 	@FXML
@@ -82,7 +86,7 @@ public class MainFrame extends VBox {
 	 * @param window
 	 * 		the window in which display the frame
 	 */
-	public MainFrame(final RegexpController controller, final Window window) {
+	public MainFrame(final RegexpController controller, final Stage window) {
 		//Set some references
 		this.controller = controller;
 		this.window = window;
@@ -101,6 +105,7 @@ public class MainFrame extends VBox {
             this.setIdle();
         } catch (Exception exception) {
         	MessageUtils.showFXMLException(this.toString(), exception);
+        	exception.printStackTrace();
         }
 	}
 	
@@ -109,6 +114,8 @@ public class MainFrame extends VBox {
     	this.setHeight(HEIGHT);
     	this.setMinWidth(WIDTH);
     	this.setMinHeight(HEIGHT);
+    	this.window.setMinWidth(WIDTH);
+    	this.window.setMinHeight(HEIGHT);
 	}
 	
 	private void setEventHandlers() {
@@ -133,6 +140,7 @@ public class MainFrame extends VBox {
         			this.regularExpression.setDisable(true);
         			this.depth.setDisable(true);
         			this.start.setDisable(true);
+        			this.maxDepth.setDisable(true);
         		});
 	
         		//Tell controller to start
@@ -182,6 +190,15 @@ public class MainFrame extends VBox {
 	}
 	
 	/**
+	 * Sets the view as done when computation finished
+	 */
+	public void setFinish() {
+		this.changeStatus(FINISH_MESSAGE, false, false);
+	}
+	
+	
+	
+	/**
 	 * Sets the label to show percentage of files with least one match.
 	 * 
 	 * @param percentage
@@ -212,12 +229,16 @@ public class MainFrame extends VBox {
 	 * 		the total numbers of files
 	 */
 	public void setTotalFilesToScan(final int total) {
-		this.totalFilesToScan = total;
-		Platform.runLater(() -> {
-			this.totalToScan.setText("" + this.totalFilesToScan);
-			// Resets the progress bar
-			this.progressBar.setProgress(0);
-		});
+		if (total > 0) {
+			this.totalFilesToScan = total;
+			Platform.runLater(() -> {
+				this.totalToScan.setText("" + total);
+				// Resets the progress bar
+				this.progressBar.setProgress(0);
+			});
+		} else {
+			throw new IllegalArgumentException(ILLEGAL_ARGUMENT_MESSAGE);
+		}
 	}
 	
 	/**
@@ -227,11 +248,15 @@ public class MainFrame extends VBox {
 	 * 		the number of analyzed files
 	 */
 	public void setNumberOfScannedFiles(final int nScanned) {
-		Platform.runLater(() -> {
-			this.currentScanned.setText("" + nScanned);
-			// Updates the progress bar
-			this.progressBar.setProgress(nScanned/this.totalFilesToScan);
-		});
+		if (this.totalFilesToScan > 0) {
+			Platform.runLater(() -> {
+				this.currentScanned.setText("" + nScanned);
+				// Updates the progress bar
+				this.progressBar.setProgress(nScanned/this.totalFilesToScan);
+			});
+		} else {
+			throw new IllegalStateException(ILLEGAL_STATE_MESSAGE);
+		}
 	}
 	
 	/**
@@ -242,10 +267,12 @@ public class MainFrame extends VBox {
 	 * @param nMatches
 	 * 		the number of matches in the file
 	 */
-	public void addResult(final String path, final int nMatches) {
-		resultRows.add(new RowType(path, "" + nMatches));
-		// Scrolls to the bottom
-		Platform.runLater(() -> this.tableView.scrollTo(this.resultRows.size() - 1));
+	public void addResult(final String path, final int nMatches) {	
+		Platform.runLater(() -> {
+			resultRows.add(new RowType(path, "" + nMatches));
+			//tableView.scrollTo(this.resultRows.size() - 1);
+			//System.out.println(path);
+		});
 	}
 	
 	/**
@@ -257,24 +284,28 @@ public class MainFrame extends VBox {
 	 * 		the message to display
 	 */
 	public void addResult(final String path, final String message) {
-		resultRows.add(new RowType(path, message));
-		// Scrolls to the bottom
-		Platform.runLater(() -> this.tableView.scrollTo(this.resultRows.size() - 1));
+		Platform.runLater(() -> {
+			resultRows.add(new RowType(path, message));
+			//tableView.scrollTo(this.resultRows.size() - 1);
+			//System.out.println(path + "["+ message +"]");
+		});
 	}
 
 	private void changeStatus(final String message, final boolean isSearching, final boolean isError) {
-		if (isError) {
-			this.statusLabel.getStyleClass().add("errorLabel");
-		} else {
-			this.statusLabel.getStyleClass().remove("errorLabel");
-		}
-		
-		this.progress.setVisible(isSearching);
-		this.progress.setManaged(isSearching);
-		this.progressBar.setVisible(isSearching);
-		this.progressBar.setManaged(isSearching);
-		
-		this.statusLabel.setText(message);
+		Platform.runLater(() -> {
+			if (isError) {
+				this.statusLabel.getStyleClass().add("errorLabel");
+			} else {
+				this.statusLabel.getStyleClass().remove("errorLabel");
+			}
+			
+			this.progress.setVisible(isSearching);
+			this.progress.setManaged(isSearching);
+			this.progressBar.setVisible(isSearching);
+			this.progressBar.setManaged(isSearching);
+			
+			this.statusLabel.setText(message);
+		});
 	}
 	
 	private boolean checkInputs() {
@@ -327,6 +358,32 @@ public class MainFrame extends VBox {
 		//What they'll contain
 		tcPath.setCellValueFactory(new PropertyValueFactory<RowType, String>(PATH_PROPERTY_NAME));
 		tcValue.setCellValueFactory(new PropertyValueFactory<RowType, String>(VALUE_PROPERTY_NAME));
+		
+		//They can be both string or integers, I try to sort them
+		tcValue.setComparator(new Comparator<String>() {		
+			@Override
+			public int compare(String o1, String o2) {
+				Integer val1 = null;
+				Integer val2 = null;
+				
+				try {
+					val1 = Integer.parseInt(o1);
+				} catch (Exception e) {
+					//First is a string
+					return -1;
+				}
+				
+				try {
+					val2 = Integer.parseInt(o2);
+				} catch (Exception e) {
+					//Second is a string
+					return 1;
+				}
+				
+				//Both are integers
+				return val2 - val1;	
+			}
+		});
 		
 		//Stretch the first column
 		tcPath.prefWidthProperty().bind(

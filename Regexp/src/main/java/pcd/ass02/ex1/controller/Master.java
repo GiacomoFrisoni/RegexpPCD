@@ -62,7 +62,8 @@ public class Master {
 		try {
 			this.executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 			// notify view
-			System.out.println("Finish");
+			//System.out.println("Finish");
+			this.view.setFinish();
 		} catch (final InterruptedException e) {
 			this.view.showThreadException("Someone interrupted the master during the await termination", e);
 		}
