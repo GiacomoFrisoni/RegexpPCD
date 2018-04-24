@@ -37,8 +37,12 @@ public class Document {
 	 * Gets the string content of the specified file.
 	 */
 	private static String getFileContent(final File file, final Charset encoding) throws IOException {
-		final byte[] encoded = Files.readAllBytes(file.toPath());
-		return new String(encoded, encoding);
+		try {
+			final byte[] encoded = Files.readAllBytes(file.toPath());
+			return new String(encoded, encoding);
+		} catch (final Exception ex) {
+			return null;
+		}
 	}
 
 }

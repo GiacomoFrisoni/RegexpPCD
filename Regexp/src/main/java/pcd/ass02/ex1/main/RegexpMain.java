@@ -13,7 +13,7 @@ import pcd.ass02.ex1.view.RegexpViewImpl;
 public class RegexpMain extends Application {
 	
 	@Override
-	public void start(Stage primaryStage) {		
+	public void start(Stage primaryStage) {
 		final RegexpView view = new RegexpViewImpl(primaryStage);
 		final RegexpController controller = new RegexpControllerImpl(view);
 		view.setController(controller);
@@ -21,7 +21,7 @@ public class RegexpMain extends Application {
 	}
 	
 	public static void main(final String[] args) {
-		launch(args);	
+		launch(args);
 	}
 	
 }

@@ -49,8 +49,8 @@ public class Consumer extends Thread {
 				nComputedFiles++;
 				final Optional<Integer> nMatches = res.getNumberOfMatches();
 				if (nMatches.isPresent()) {
-					// Updates the number of file with matches
 					if (nMatches.get() > 0) {
+			        	// Updates the number of files with least one match
 						this.nLeastOneMatch++;
 						// Updates the mean number of matches among files with matches
 						double tmp = this.meanNumberOfMatches;
