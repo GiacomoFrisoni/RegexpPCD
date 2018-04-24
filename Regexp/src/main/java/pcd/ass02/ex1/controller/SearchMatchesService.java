@@ -82,12 +82,19 @@ public class SearchMatchesService extends Thread {
 		} catch (final IOException e) {
 			// notify view
 		}
-		// Tells to the view the total number of files
-		this.view.setTotalFilesToScan(files.size());
-		// Starts the results consumer on a new thread
-		new Consumer(this.queue, this.view, files.size()).start();
-		// Starts master computation
-		new Master(files, this.pattern, this.queue, this.view).compute();
+		
+		if (!files.isEmpty()) {
+			// Tells to the view the total number of files
+			this.view.setTotalFilesToScan(files.size());
+			// Starts the results consumer on a new thread
+			new Consumer(this.queue, this.view, files.size()).start();
+			// Starts master computation
+			new Master(files, this.pattern, this.queue, this.view).compute();
+		} else {
+			this.view.setFinish();
+		}
+		
+		
 	}
 
 }
