@@ -57,7 +57,7 @@ public class Consumer extends Thread {
 						this.meanNumberOfMatches += (nMatches.get() - tmp) / this.nLeastOneMatch;
 					}
 					// Shows file result on view
-					this.view.showResult(res.getPath().toString(), nMatches.get());
+					this.view.showResult(res.getPath().toString(), nMatches.get(), 0);
 				} else {
 					// Shows file result on view
 					this.view.showResult(res.getPath().toString(), res.getMessage().get());

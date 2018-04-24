@@ -71,8 +71,8 @@ public class RegexpViewImpl implements RegexpView {
 	}
 
 	@Override
-	public void showResult(final String path, final int matches) {
-		this.mainFrame.addResult(path, matches);
+	public void showResult(final String path, final int matches, final long time) {
+		this.mainFrame.addResult(path, matches, time);
 	}
 
 	@Override

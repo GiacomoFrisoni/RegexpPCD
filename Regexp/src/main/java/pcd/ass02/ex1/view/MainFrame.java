@@ -45,8 +45,10 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	
 	private static final String PATH_COLUMN_TITLE = "Path";
 	private static final String VALUE_COLUMN_TITLE = "Value";
+	private static final String TIME_COLUMN_TITLE = "Elapsed time";
 	private static final String PATH_PROPERTY_NAME = "path";
 	private static final String VALUE_PROPERTY_NAME = "value";
+	private static final String TIME_PROPERTY_NAME = "elapsedTime";
 	
 	private static final String DECIMAL_FORMAT_PATTERN = "0.00";
 	
@@ -60,7 +62,7 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	private TextField path, regularExpression, depth;
 	
 	@FXML
-	private Button choosePath, start;
+	private Button choosePath, start, reset;
 	
 	@FXML
 	private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan;
@@ -163,6 +165,11 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 				depth.setDisable(newValue);
 			}
 		});
+        
+        //Reset handler
+        this.reset.setOnMouseClicked(e -> {
+        	//TODO reset
+        });
     }
 	
 	/**
@@ -170,6 +177,7 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	 */
 	public void setIdle() {
 		this.changeStatus(IDLE_MESSAGE, false, false);
+		this.reset.setDisable(true);
 	}
 	
 	/**
@@ -206,7 +214,7 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	 */
 	public void showLeastOneMatchPercentage(final double percentage) {
 		Platform.runLater(() -> {
-			this.leastOneMatchPercentage.setText(this.decimalFormat.format(percentage) + PERCENTAGE_SYMBOL);
+			this.leastOneMatchPercentage.setText(this.decimalFormat.format(percentage*100) + PERCENTAGE_SYMBOL);
 		});
 	}
 	
@@ -266,10 +274,12 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	 * 		the path of the scanned file
 	 * @param nMatches
 	 * 		the number of matches in the file
+	 * @param time
+	 * 		time elapsed to evaluate that file
 	 */
-	public void addResult(final String path, final int nMatches) {	
+	public void addResult(final String path, final int nMatches, final long time) {	
 		Platform.runLater(() -> {
-			resultRows.add(new RowType(path, "" + nMatches));
+			resultRows.add(new RowType(path, "" + nMatches, time));
 			//tableView.scrollTo(this.resultRows.size() - 1);
 			//System.out.println(path);
 		});
@@ -285,12 +295,21 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	 */
 	public void addResult(final String path, final String message) {
 		Platform.runLater(() -> {
-			resultRows.add(new RowType(path, message));
+			resultRows.add(new RowType(path, message, 0));
 			//tableView.scrollTo(this.resultRows.size() - 1);
 			//System.out.println(path + "["+ message +"]");
 		});
 	}
 
+	/**
+	 * Change the status of the window according to passed parameters
+	 * @param message
+	 * 		Message to show under the button (info, confirm, error...)
+	 * @param isSearching
+	 * 		TRUE = progress visible | FALSE = progress disabled
+	 * @param isError
+	 * 		TRUE = error label's style | FALSE = normal label's style
+	 */
 	private void changeStatus(final String message, final boolean isSearching, final boolean isError) {
 		Platform.runLater(() -> {
 			if (isError) {
@@ -308,6 +327,11 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 		});
 	}
 	
+	/**
+	 * Check if inputs are not empty and valid
+	 * @return
+	 * 		TRUE if all inputs are valid
+	 */
 	private boolean checkInputs() {
 		this.setIdle();
 		
@@ -343,21 +367,29 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 		return true;
 	}
 	
+	/**
+	 * Set the right columns, including width and binding
+	 */
 	private void setTableColumns() {
 		//Create two columns
 		final TableColumn<RowType, String> tcPath = new TableColumn<>(PATH_COLUMN_TITLE);
 		final TableColumn<RowType, String> tcValue = new TableColumn<>(VALUE_COLUMN_TITLE);
+		final TableColumn<RowType, String> tcTime = new TableColumn<>(TIME_COLUMN_TITLE);
+		
 		
 		//First is not resizable
 		tcValue.setResizable(false);
+		tcTime.setResizable(false);
 		
 		//Preferred width
 		tcPath.setPrefWidth(300.0d);  	
 		tcValue.setPrefWidth(150.0d);
+		tcTime.setPrefWidth(150.0d);
 		
 		//What they'll contain
 		tcPath.setCellValueFactory(new PropertyValueFactory<RowType, String>(PATH_PROPERTY_NAME));
 		tcValue.setCellValueFactory(new PropertyValueFactory<RowType, String>(VALUE_PROPERTY_NAME));
+		tcTime.setCellValueFactory(new PropertyValueFactory<RowType, String>(TIME_PROPERTY_NAME));
 		
 		//They can be both string or integers, I try to sort them
 		tcValue.setComparator(new Comparator<String>() {		
@@ -389,11 +421,13 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 		tcPath.prefWidthProperty().bind(
                 this.tableView.widthProperty()
                 .subtract(tcValue.widthProperty())
+                .subtract(tcTime.widthProperty())
              );
 		
 		//Add all columns
 		this.tableView.getColumns().add(tcPath);
 		this.tableView.getColumns().add(tcValue);
+		this.tableView.getColumns().add(tcTime);
 		
 		//Bind to observable collection
 		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(resultRows));
