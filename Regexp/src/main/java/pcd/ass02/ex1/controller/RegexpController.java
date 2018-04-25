@@ -37,4 +37,9 @@ public interface RegexpController {
 	 */
 	boolean search();
 	
+	/**
+	 * Reset all components to make a new computation
+	 */
+	void reset();
+	
 }

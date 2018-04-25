@@ -1,4 +1,4 @@
-package pcd.ass02.ex1.controller;
+package pcd.ass02.ex2.model;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,13 +8,11 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import io.vertx.core.Vertx;
+import pcd.ass02.ex1.controller.RegexpController;
 import pcd.ass02.ex1.view.RegexpView;
 
-/**
- * Implementation of {@link RegexpController}.
- *
- */
-public class RegexpControllerImpl implements RegexpController {
+public class RegexpControllerVertexImpl implements RegexpController {
 
 	private final RegexpView view;
 	private Optional<Path> startingPath;
@@ -27,7 +25,7 @@ public class RegexpControllerImpl implements RegexpController {
 	 * @param view
 	 * 		the application view
 	 */
-	public RegexpControllerImpl(final RegexpView view) {
+	public RegexpControllerVertexImpl(final RegexpView view) {
 		Objects.requireNonNull(view);
 		this.startingPath = Optional.empty();
 		this.pattern = Optional.empty();
@@ -70,7 +68,9 @@ public class RegexpControllerImpl implements RegexpController {
 	public boolean search() {
 		if (this.startingPath.isPresent()) {
 			if (this.pattern.isPresent()) {
-				new SearchMatchesService(this.startingPath.get(), this.pattern.get(), this.maxDepth, this.view).start();
+				final Vertx vertx = Vertx.vertx();
+				final MainVerticle myVerticle = new MainVerticle(this.view, this.startingPath.get(), this.pattern.get(), this.maxDepth);
+				vertx.deployVerticle(myVerticle);
 				return true;
 			} else {
 				this.view.showInputError("The regular expression is not specified");
@@ -83,8 +83,7 @@ public class RegexpControllerImpl implements RegexpController {
 
 	@Override
 	public void reset() {
-		// TODO Auto-generated method stub
-		
+		this.view.reset();
 	}
-	
+
 }

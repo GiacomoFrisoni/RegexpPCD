@@ -168,7 +168,7 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
         
         //Reset handler
         this.reset.setOnMouseClicked(e -> {
-        	//TODO reset
+        	this.controller.reset();
         });
     }
 	
@@ -203,6 +203,27 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	public void setFinish() {
 		this.changeStatus(FINISH_MESSAGE, false, false);
 		Platform.runLater(() -> this.reset.setDisable(false));
+	}
+	
+	/**
+	 * Reset all the view
+	 */
+	public void reset() {
+		this.changeStatus(IDLE_MESSAGE, false, false);
+		Platform.runLater(() -> {		
+			this.path.clear();
+			this.regularExpression.clear();
+			this.depth.setText("1");
+			this.maxDepth.setSelected(false);
+		
+			this.choosePath.setDisable(false);
+			this.path.setDisable(false);
+			this.regularExpression.setDisable(false);
+			this.depth.setDisable(false);
+			this.start.setDisable(false);
+			this.maxDepth.setDisable(false);
+			this.reset.setDisable(true);
+		});
 	}
 	
 	

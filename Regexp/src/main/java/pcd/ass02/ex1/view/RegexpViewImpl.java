@@ -8,8 +8,7 @@ import pcd.ass02.ex1.controller.RegexpController;
 
 public class RegexpViewImpl implements RegexpView {
 	
-	private static final String WINDOW_TITLE = "RegExp - Giacomo Frisoni & Marcin Pabich";
-	
+	private final String windowTitle;
 	private final Stage stage;
 	private RegexpController controller;
 	private MainFrame mainFrame;
@@ -20,8 +19,9 @@ public class RegexpViewImpl implements RegexpView {
 	 * @param stage
 	 * 		stage passed from the entry point of JavaFX application (usually primaryStage)
 	 */
-	public RegexpViewImpl (final Stage stage) {
+	public RegexpViewImpl (final Stage stage, final String windowTitle) {
 		this.stage = stage;
+		this.windowTitle = windowTitle;
 	}
 
 	
@@ -41,7 +41,7 @@ public class RegexpViewImpl implements RegexpView {
 	        System.exit(0);
 		});
 
-		this.stage.setTitle(WINDOW_TITLE);
+		this.stage.setTitle(this.windowTitle);
 		this.stage.setScene(scene);
 		this.stage.getIcons().addAll(
 				new Image(("file:res/icon16x16.png")),
@@ -93,6 +93,12 @@ public class RegexpViewImpl implements RegexpView {
 	@Override
 	public void showThreadException(final String message, final Exception e) {
 		MessageUtils.showThreadExcpetion(message, e);
+	}
+
+
+	@Override
+	public void reset() {
+		this.mainFrame.reset();
 	}
 	
 }

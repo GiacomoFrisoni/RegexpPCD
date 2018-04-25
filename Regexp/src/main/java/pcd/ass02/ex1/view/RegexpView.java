@@ -93,5 +93,10 @@ public interface RegexpView {
 	 * 		short message to show on the screen
 	 */
 	void showInputError(String message);
+	
+	/**
+	 * Reset all components to make a new compututaion
+	 */
+	void reset();
 
 }
