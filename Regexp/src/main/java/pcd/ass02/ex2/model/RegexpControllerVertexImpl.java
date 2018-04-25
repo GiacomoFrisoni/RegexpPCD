@@ -1,23 +1,16 @@
 package pcd.ass02.ex2.model;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import io.vertx.core.Vertx;
 import pcd.ass02.ex1.controller.RegexpController;
+import pcd.ass02.ex1.model.RegexpResearchData;
 import pcd.ass02.ex1.view.RegexpView;
 
 public class RegexpControllerVertexImpl implements RegexpController {
 
+	private final RegexpResearchData model;
 	private final RegexpView view;
-	private Optional<Path> startingPath;
-	private Optional<Pattern> pattern;
-	private int maxDepth;
 
 	/**
 	 * Creates a new Controller.
@@ -25,51 +18,47 @@ public class RegexpControllerVertexImpl implements RegexpController {
 	 * @param view
 	 * 		the application view
 	 */
-	public RegexpControllerVertexImpl(final RegexpView view) {
+	public RegexpControllerVertexImpl(final RegexpResearchData model, final RegexpView view) {
+		Objects.requireNonNull(model);
 		Objects.requireNonNull(view);
-		this.startingPath = Optional.empty();
-		this.pattern = Optional.empty();
-		this.maxDepth = Integer.MAX_VALUE;
+		this.model = model;
 		this.view = view;
 	}
 
 	@Override
 	public void setStartingPath(final String path) {
-		Objects.requireNonNull(path);
-		final Path tempPath = Paths.get(path);
-		if (Files.exists(tempPath)) {
-			this.startingPath = Optional.of(tempPath);
-		} else {
+		try {
+			this.model.setStartingPath(path);
+		} catch (final IllegalArgumentException e) {
 			this.view.showInputError("Invalid path");
 		}
 	}
 
 	@Override
 	public void setPattern(final String regex) {
-		Objects.requireNonNull(regex);
 		try {
-			final Pattern tmpPattern = Pattern.compile(regex);
-			this.pattern = Optional.of(tmpPattern);
-		} catch (final PatternSyntaxException e) {
+			this.model.setPattern(regex);
+		} catch (final IllegalArgumentException e) {
 			this.view.showInputError("Invalid regular expression syntax");
 		}
 	}
-	
+
 	@Override
 	public void setMaxDepthNavigation(final int maxDepth) {
-		if (maxDepth >= 0) {
-			this.maxDepth = maxDepth;
-		} else {
+		try {
+			this.model.setMaxDepthNavigation(maxDepth);
+		} catch (final IllegalArgumentException e) {
 			this.view.showInputError("Invalid max depth value");
 		}
 	}
 
 	@Override
 	public boolean search() {
-		if (this.startingPath.isPresent()) {
-			if (this.pattern.isPresent()) {
+		if (this.model.getStartingPath().isPresent()) {
+			if (this.model.getPattern().isPresent()) {
 				final Vertx vertx = Vertx.vertx();
-				final MainVerticle myVerticle = new MainVerticle(this.view, this.startingPath.get(), this.pattern.get(), this.maxDepth);
+				final MainVerticle myVerticle = new MainVerticle(this.view, this.model.getStartingPath().get(),
+						this.model.getPattern().get(), this.model.getMaxDepth());
 				vertx.deployVerticle(myVerticle);
 				return true;
 			} else {
@@ -83,7 +72,7 @@ public class RegexpControllerVertexImpl implements RegexpController {
 
 	@Override
 	public void reset() {
-		this.view.reset();
+		this.model.reset();
 	}
 
 }
