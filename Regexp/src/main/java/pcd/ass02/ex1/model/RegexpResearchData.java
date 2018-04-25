@@ -17,5 +17,7 @@ public interface RegexpResearchData {
 	Optional<Pattern> getPattern();
 	
 	int getMaxDepth();
+	
+	void reset();
 	 
 }

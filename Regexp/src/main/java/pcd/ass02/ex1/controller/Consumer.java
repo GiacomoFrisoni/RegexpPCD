@@ -70,7 +70,7 @@ public class Consumer extends Thread {
 								this.meanNumberOfMatches += (nMatches - tmp) / this.nLeastOneMatch;
 							}
 							// Shows file result on view
-							this.view.showResult(res.getPath().toString(), nMatches);
+							this.view.showResult(successfulRes.getPath().toString(), nMatches, successfulRes.getElapsedTime());
 						} else if (res instanceof SearchFileErrorResult) {
 							final SearchFileErrorResult errorRes = (SearchFileErrorResult)res;
 							// Shows file result on view

@@ -56,8 +56,10 @@ public interface RegexpView {
 	 * 		path to the scanned file
 	 * @param nMatches
 	 * 		number of matches in the file
+	 * @param time
+	 * 		time elapsed to parse the file
 	 */
-	void showResult(String path, int nMatches);
+	void showResult(String path, int nMatches, long time);
 	
 	/**
 	 * Shows a file pattern research result.

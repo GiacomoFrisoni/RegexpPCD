@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
@@ -40,26 +39,26 @@ public class Master {
 	 * 		the regex pattern
 	 * @param maxDepth
 	 * 		the max depth navigation
+	 * @param executor
+	 * 		the executor service on which submit tasks
 	 * @param queue
 	 * 		the queue in which to enter the search results of the tasks
 	 * @param view
 	 * 		the application view
 	 */
 	public Master(final Path startingPath, final Pattern pattern, final int maxDepth,
-			final BlockingQueue<Optional<SearchFileResult>> queue, final RegexpView view) {
+			final ExecutorService executor, final BlockingQueue<Optional<SearchFileResult>> queue, final RegexpView view) {
 		Objects.requireNonNull(startingPath);
 		Objects.requireNonNull(pattern);
+		Objects.requireNonNull(executor);
 		Objects.requireNonNull(queue);
 		Objects.requireNonNull(view);
 		this.startingPath = startingPath;
 		this.pattern = pattern;
 		this.maxDepth = maxDepth;
+		this.executor = executor;
 		this.queue = queue;
 		this.view = view;
-		// Calculates the pool size for tasks executor, according to the processors number
-		final int poolSize = Runtime.getRuntime().availableProcessors() + 1;
-		// Initializes the executor
-		this.executor = Executors.newFixedThreadPool(poolSize);
 	}
 	
 	/**

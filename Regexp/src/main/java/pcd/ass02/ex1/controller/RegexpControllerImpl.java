@@ -1,6 +1,8 @@
 package pcd.ass02.ex1.controller;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import pcd.ass02.ex1.model.RegexpResearchData;
 import pcd.ass02.ex1.view.RegexpView;
@@ -13,7 +15,8 @@ public class RegexpControllerImpl implements RegexpController {
 
 	private final RegexpResearchData model;
 	private final RegexpView view;
-	
+	private final ExecutorService executor;
+
 	/**
 	 * Creates a new Controller.
 	 * 
@@ -25,6 +28,10 @@ public class RegexpControllerImpl implements RegexpController {
 		Objects.requireNonNull(view);
 		this.model = model;
 		this.view = view;
+		// Calculates the pool size for tasks executor, according to the processors number
+		final int poolSize = Runtime.getRuntime().availableProcessors() + 1;
+		// Initializes the executor
+		this.executor = Executors.newFixedThreadPool(poolSize);
 	}
 
 	@Override
@@ -44,7 +51,7 @@ public class RegexpControllerImpl implements RegexpController {
 			this.view.showInputError("Invalid regular expression syntax");
 		}
 	}
-	
+
 	@Override
 	public void setMaxDepthNavigation(final int maxDepth) {
 		try {
@@ -59,7 +66,7 @@ public class RegexpControllerImpl implements RegexpController {
 		if (this.model.getStartingPath().isPresent()) {
 			if (this.model.getPattern().isPresent()) {
 				new SearchMatchesService(this.model.getStartingPath().get(), this.model.getPattern().get(),
-						this.model.getMaxDepth(), this.view).start();
+						this.model.getMaxDepth(), this.executor, this.view).start();
 				return true;
 			} else {
 				this.view.showInputError("The regular expression is not specified");
@@ -68,6 +75,11 @@ public class RegexpControllerImpl implements RegexpController {
 			this.view.showInputError("The starting path is not specified");
 		}
 		return false;
+	}
+
+	@Override
+	public void reset() {
+		this.model.reset();
 	}
 	
 }

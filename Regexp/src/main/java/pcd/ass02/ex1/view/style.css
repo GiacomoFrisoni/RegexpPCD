@@ -13,6 +13,10 @@
 	/*@SuppressWarning*/ specialButtonColorHover: derive(specialButtonColor, +15%);
 	/*@SuppressWarning*/ specialButtonColorPressed: derive(specialButtonColorHover, +15%);
 	
+	/*@SuppressWarning*/ resetButtonColor: #904e55;
+	/*@SuppressWarning*/ resetButtonColorHover: derive(resetButtonColor, +15%);
+	/*@SuppressWarning*/ resetButtonColorPressed: derive(resetButtonColorHover, +15%);
+	
 	/*@SuppressWarning*/ progressColor: #4286f4;
 	
 }
@@ -66,9 +70,12 @@
 	-fx-background-color: buttonColorPressed;
 }
 
+#specialButton, #resetButton {
+	-fx-padding: 10 25 10 25; 
+}
+
 #specialButton {
 	-fx-background-color: specialButtonColor;
-	-fx-padding: 10 25 10 25; 
 }
 
 #specialButton:hover {
@@ -77,6 +84,18 @@
 
 #specialButton:pressed, #specialButton:default:hover:pressed {
 	-fx-background-color: specialButtonColorPressed;
+}
+
+#resetButton {
+	-fx-background-color: resetButtonColor;
+}
+
+#resetButton:hover {
+	-fx-background-color: resetButtonColorHover;
+}
+
+#resetButton:pressed, #specialButton:default:hover:pressed {
+	-fx-background-color: resetButtonColorPressed;
 }
 
 .progress-bar > .bar {

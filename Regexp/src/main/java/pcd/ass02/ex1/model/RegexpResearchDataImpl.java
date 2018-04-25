@@ -66,4 +66,11 @@ public class RegexpResearchDataImpl implements RegexpResearchData {
 		return this.maxDepth;
 	}
 	
+	@Override
+	public void reset() {
+		this.startingPath = Optional.empty();
+		this.pattern = Optional.empty();
+		this.maxDepth = Integer.MAX_VALUE;
+	}
+	
 }
