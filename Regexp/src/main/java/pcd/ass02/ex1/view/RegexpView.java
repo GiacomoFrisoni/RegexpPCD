@@ -80,10 +80,12 @@ public interface RegexpView {
 	/**
 	 * Shows an exception when something went wrong
 	 * 
+	 * @param exceptionType
+	 * 		the type of the occurred exception
 	 * @param message
 	 * 		message to show
 	 * @param e
-	 * 		exception that occurred
+	 * 		exception
 	 */
 	void showException(ExceptionType exceptionType, String message, Exception e);
 	
