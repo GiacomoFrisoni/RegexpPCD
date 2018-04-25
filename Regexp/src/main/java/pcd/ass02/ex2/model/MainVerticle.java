@@ -93,27 +93,34 @@ public class MainVerticle extends AbstractVerticle {
 										} else {
 											this.nVisitedFiles++;
 											this.view.setTotalFilesToScan(this.nVisitedFiles);
-											cron.start();
 											final Buffer buffer = readFileHandler.result();
-											final Matcher matcher = this.pattern.matcher(buffer.toString());
-											int nMatches = 0;
-											while (matcher.find())
-												nMatches++;
-											cron.stop();
-											if (nMatches > 0) {
-												// Updates the number of files with least one match
-												this.nLeastOneMatch++;
-												// Updates the mean number of matches among files with matches
-												double tmp = this.meanNumberOfMatches;
-												this.meanNumberOfMatches += (nMatches - tmp) / this.nLeastOneMatch;
-											}
-											this.view.showResult(path, nMatches, cron.getTime());
-											// Shows statistics on view
-											this.view.showMeanNumberOfMatches(this.meanNumberOfMatches);
-											this.view.showLeastOneMatchPercentage(
-													(double) this.nLeastOneMatch / (double) nComputedFiles);
-											// Shows analysis progress on view
-											this.view.setNumberOfScannedFiles(++nComputedFiles);
+											vertx.<Integer>executeBlocking(blockingHandler -> {
+												cron.start();
+												final Matcher matcher = this.pattern.matcher(buffer.toString());
+												int nMatches = 0;
+												while (matcher.find())
+													nMatches++;
+												cron.stop();
+												blockingHandler.complete(nMatches);
+											}, resultHandler -> {
+												if (resultHandler.succeeded()) {
+													int nMatches = resultHandler.result();
+													if (nMatches > 0) {
+														// Updates the number of files with least one match
+														this.nLeastOneMatch++;
+														// Updates the mean number of matches among files with matches
+														final double tmp = this.meanNumberOfMatches;
+														this.meanNumberOfMatches += (nMatches - tmp) / this.nLeastOneMatch;
+													}
+													this.view.showResult(path, nMatches, cron.getTime());
+													// Shows statistics on view
+													this.view.showMeanNumberOfMatches(this.meanNumberOfMatches);
+													this.view.showLeastOneMatchPercentage(
+															(double) this.nLeastOneMatch / (double) nComputedFiles);
+													// Shows analysis progress on view
+													this.view.setNumberOfScannedFiles(++nComputedFiles);
+												}
+											});
 										}
 									});
 								}
