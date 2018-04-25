@@ -136,14 +136,8 @@ public class MainFrame extends GridPane {
         	//Check if inputs are not empty / correct
         	if (checkInputs()) {
         		//Disable some views
-        		Platform.runLater(() -> {
-        			this.choosePath.setDisable(true);
-        			this.path.setDisable(true);
-        			this.regularExpression.setDisable(true);
-        			this.depth.setDisable(true);
-        			this.start.setDisable(true);
-        			this.maxDepth.setDisable(true);
-        		});
+        		this.setIdle();
+        		this.setInputDisabled(true);
 	
         		//Tell controller to start
         		this.controller.setStartingPath(this.path.getText());
@@ -151,10 +145,15 @@ public class MainFrame extends GridPane {
         		if (!this.maxDepth.isSelected()) {
         			this.controller.setMaxDepthNavigation(Integer.parseInt(this.depth.getText()));
         		}
-        		this.controller.search();
         		
-        		//Set to searching
-        		this.setSearching();
+        		//Check if search can start
+        		if (this.controller.search()) {
+        			//Start searching
+            		this.setSearching();
+        		} else {
+        			//Something is wrong
+        			this.setInputDisabled(false);
+        		} 	
         	}
 		});
         
@@ -224,6 +223,8 @@ public class MainFrame extends GridPane {
 			this.start.setDisable(false);
 			this.maxDepth.setDisable(false);
 			this.reset.setDisable(true);
+			this.resultRows.clear();
+			this.tableView.getItems().clear();
 		});
 	}
 	
@@ -454,6 +455,18 @@ public class MainFrame extends GridPane {
 		
 		//Bind to observable collection
 		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(resultRows));
+	}
+	
+	
+	private void setInputDisabled(final boolean isDisabled) {
+		Platform.runLater(() -> {
+			this.choosePath.setDisable(isDisabled);
+			this.path.setDisable(isDisabled);
+			this.regularExpression.setDisable(isDisabled);
+			this.start.setDisable(isDisabled);
+			this.maxDepth.setDisable(isDisabled);
+			this.depth.setDisable(this.maxDepth.isSelected());
+		});
 	}
 	
 }

@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import pcd.ass02.ex1.model.SearchFileErrorResult;
 import pcd.ass02.ex1.model.SearchFileResult;
 import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
+import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
 import pcd.ass02.ex1.view.RegexpView;
 
 /**
@@ -84,7 +85,7 @@ public class Consumer extends Thread {
 					}	
 				}
 			} catch (final InterruptedException ie) {
-				this.view.showThreadException("Someone interrupted the consumer when was waiting for something", ie);
+				this.view.showException(ExceptionType.THREAD_EXCEPTION, "Someone interrupted the consumer when was waiting for something", ie);
 			}
 		}
 		this.view.setFinish();

@@ -9,11 +9,25 @@ import javafx.scene.control.Alert.AlertType;
 
 public class MessageUtils {
 	
-	public static final String ERROR_TITLE = "Error";
-	public static final String FXML_ERROR_HEADER = "FXML Loading Exception";
-	public static final String FXML_ERROR_MESSAGE = "could not be loaded";
+	public enum ExceptionType {
+		
+		FXML_EXCEPTION("FXML Loading Exception"),
+		THREAD_EXCEPTION("Thread Exception"),
+		IO_EXCEPTION("IO Exception");
+		
+		private final String header;
+		
+		private ExceptionType(String header) {
+			this.header = header;
+		}
+		
+		public String getHeader() {
+			return this.header;
+		}
+	}
 	
-	public static final String THREAD_ERROR_HEADER = "Thread Exception";
+	public static final String ERROR_TITLE = "Error";
+	public static final String FXML_ERROR_MESSAGE = "could not be loaded";
 	
 	/**
 	 * Show a dialog. Thread-Safe (using Platform.runLater)
@@ -56,17 +70,17 @@ public class MessageUtils {
 	
 	public static void showFXMLException(final String component, final Exception e) {
 		if (e != null) {
-			showMessage(AlertType.ERROR, ERROR_TITLE, FXML_ERROR_HEADER, component + " " + FXML_ERROR_MESSAGE, e.getMessage(), null);
+			showMessage(AlertType.ERROR, ERROR_TITLE, ExceptionType.FXML_EXCEPTION.getHeader(), component + " " + FXML_ERROR_MESSAGE, e.getMessage(), null);
 		} else {
-			showMessage(AlertType.ERROR, ERROR_TITLE, FXML_ERROR_HEADER, component + " " + FXML_ERROR_MESSAGE, "", null);
+			showMessage(AlertType.ERROR, ERROR_TITLE, ExceptionType.FXML_EXCEPTION.getHeader(), component + " " + FXML_ERROR_MESSAGE, "", null);
 		}
 	}
 	
-	public static void showThreadExcpetion(final String message, Exception e) {
+	public static void showExcpetion(final ExceptionType exceptionType, final String message, final Exception e) {
 		if (e != null) {
-			showMessage(AlertType.ERROR, ERROR_TITLE, THREAD_ERROR_HEADER, message, e.getMessage(), null);
+			showMessage(AlertType.ERROR, ERROR_TITLE, exceptionType.getHeader(), message, e.getMessage(), null);
 		} else {
-			showMessage(AlertType.ERROR, ERROR_TITLE, THREAD_ERROR_HEADER, message, "", null);
+			showMessage(AlertType.ERROR, ERROR_TITLE, exceptionType.getHeader(), message, "", null);
 		}	
 	}
 }

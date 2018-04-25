@@ -1,6 +1,7 @@
 package pcd.ass02.ex1.view;
 
 import pcd.ass02.ex1.controller.RegexpController;
+import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
 
 public interface RegexpView {
 
@@ -77,14 +78,14 @@ public interface RegexpView {
 	void setFinish();
 	
 	/**
-	 * Shows an exception when something went wrong with a thread.
+	 * Shows an exception when something went wrong
 	 * 
 	 * @param message
 	 * 		message to show
 	 * @param e
 	 * 		exception that occurred
 	 */
-	void showThreadException(String message, Exception e);
+	void showException(ExceptionType exceptionType, String message, Exception e);
 	
 	/**
 	 * Shows a small non-invasive error message if the input was incorrect.

@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 import pcd.ass02.ex1.model.SearchFileResult;
 import pcd.ass02.ex1.view.RegexpView;
+import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
 
 /**
  * This class models the Regex Master.
@@ -72,13 +73,13 @@ public class Master {
 							(path) -> { results.add(this.executor.submit(new SearchMatchesInFileTask(path, this.pattern, this.queue))); },
 							(nVisitedFiles) -> { this.view.setTotalFilesToScan(nVisitedFiles); }));
 		} catch (final IOException e) {
-			// notify view
+			this.view.showException(ExceptionType.IO_EXCEPTION, "Error during reading files", e);
 		}
 		for (final Future<Void> result : results) {
 			try {
 				result.get();
 			} catch (final Exception e) {
-				this.view.showThreadException("Error during the await termination", e);
+				this.view.showException(ExceptionType.THREAD_EXCEPTION, "Error during the await termination", e);
 			}
 		}
 		this.queue.add(Consumer.POISON_PILL);

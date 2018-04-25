@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import pcd.ass02.ex1.controller.RegexpController;
+import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
 
 public class RegexpViewImpl implements RegexpView {
 	
@@ -91,8 +92,8 @@ public class RegexpViewImpl implements RegexpView {
 	}
 
 	@Override
-	public void showThreadException(final String message, final Exception e) {
-		MessageUtils.showThreadExcpetion(message, e);
+	public void showException(final ExceptionType exceptionType, final String message, final Exception e) {
+		MessageUtils.showExcpetion(exceptionType, message, e);
 	}
 	
 }

@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 
 public class RegularFileVisitor extends SimpleFileVisitor<Path> {
 
+	//private final long MAX_FILE_SIZE = 524288000;
+	
 	private final Consumer<Path> pathHandler;
 	private final Consumer<Integer> visitedFilesHandler;
 	private int nVisitedFiles;
@@ -25,9 +27,13 @@ public class RegularFileVisitor extends SimpleFileVisitor<Path> {
 	@Override
 	public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
 		if(!attrs.isDirectory()) {
-			this.nVisitedFiles++;
-			this.pathHandler.accept(path);
-			this.visitedFilesHandler.accept(this.nVisitedFiles);
+			//if (attrs.size() < MAX_FILE_SIZE) {
+				this.nVisitedFiles++;
+				this.pathHandler.accept(path);
+				this.visitedFilesHandler.accept(this.nVisitedFiles);
+			//} else {
+			//	System.out.println(path.toAbsolutePath().toString() + " is bigger than 500MB: " + attrs.size());
+			//}
 		}
 		return FileVisitResult.CONTINUE;
 	}

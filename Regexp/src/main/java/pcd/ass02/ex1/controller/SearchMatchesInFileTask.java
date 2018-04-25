@@ -21,6 +21,9 @@ import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
  */
 public class SearchMatchesInFileTask implements Callable<Void> {
 
+	private final static long MAX_FILE_SIZE = 524288000;
+	private final static String FILE_TOO_LARGE_MESSAGE = "Too large to analyze";
+	
 	private final Path filePath;
 	private final Pattern pattern;
 	private final BlockingQueue<Optional<SearchFileResult>> queue;
@@ -47,18 +50,25 @@ public class SearchMatchesInFileTask implements Callable<Void> {
 	@Override
 	public Void call() {
 		try {
-			final Chrono cron = new Chrono();
-			cron.start();
-			final Document document = new Document(this.filePath);
-			final Matcher matcher = this.pattern.matcher(document.getContent());
-			int nMatches = 0;
-	        while (matcher.find())
-	        	nMatches++;
-			cron.stop();
-			this.queue.add(Optional.of(new SearchFileSuccessfulResult(this.filePath, nMatches, cron.getTime())));
+			
+			if (this.filePath.toFile().length() < MAX_FILE_SIZE) {			
+				final Chrono cron = new Chrono();
+				cron.start();
+				
+				final Document document = new Document(this.filePath);
+				final Matcher matcher = this.pattern.matcher(document.getContent());
+				
+				int nMatches = 0;
+		        while (matcher.find())
+		        	nMatches++;
+				cron.stop();
+				this.queue.add(Optional.of(new SearchFileSuccessfulResult(this.filePath, nMatches, cron.getTime())));
+			} else {
+				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, FILE_TOO_LARGE_MESSAGE)));
+			}
 		} catch (final IOException e) {
 			this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, e.getLocalizedMessage())));
-		}
+		} 
 		return null;
 	}
 
