@@ -71,7 +71,7 @@
 			
 			<HBox alignment="CENTER" spacing="5">
 				<Button fx:id="start" id="specialButton">Start Searching</Button>	
-				<Button fx:id="reset" id="specialButton">Reset Searching</Button>	
+				<Button fx:id="reset" id="resetButton">Reset Searching</Button>	
 			</HBox>	
 			
 			<HBox alignment="CENTER" spacing="5">

@@ -31,22 +31,22 @@ public class MessageUtils {
 	 * 		action performered on button pressed
 	 */
 	public static void showMessage(final AlertType type, final String title, final String header, final String message, final String additional, Consumer<ButtonType> action) {
-		final Alert alert = new Alert(type);
-		alert.setTitle(title);
-		alert.setHeaderText(header);
-		
-		String msg = message;
-		
-		if (additional != null) {
-			if (!additional.isEmpty()) {
-				msg += "\n";
-				msg += additional;
-			}
-		}
-		
-		alert.setContentText(msg);
-		
 		Platform.runLater(() ->{
+			final Alert alert = new Alert(type);
+			alert.setTitle(title);
+			alert.setHeaderText(header);
+			
+			String msg = message;
+			
+			if (additional != null) {
+				if (!additional.isEmpty()) {
+					msg += "\n";
+					msg += additional;
+				}
+			}
+			
+			alert.setContentText(msg);
+		
 			if (action != null)
 				alert.showAndWait().ifPresent(action);
 			else
@@ -54,11 +54,19 @@ public class MessageUtils {
 		});
 	}
 	
-	public static void showFXMLException(final String component, Exception e) {
-		showMessage(AlertType.ERROR, ERROR_TITLE, FXML_ERROR_HEADER, component + " " + FXML_ERROR_MESSAGE, e.getMessage(), null);
+	public static void showFXMLException(final String component, final Exception e) {
+		if (e != null) {
+			showMessage(AlertType.ERROR, ERROR_TITLE, FXML_ERROR_HEADER, component + " " + FXML_ERROR_MESSAGE, e.getMessage(), null);
+		} else {
+			showMessage(AlertType.ERROR, ERROR_TITLE, FXML_ERROR_HEADER, component + " " + FXML_ERROR_MESSAGE, "", null);
+		}
 	}
 	
 	public static void showThreadExcpetion(final String message, Exception e) {
-		showMessage(AlertType.ERROR, ERROR_TITLE, THREAD_ERROR_HEADER, message, e.getMessage(), null);
+		if (e != null) {
+			showMessage(AlertType.ERROR, ERROR_TITLE, THREAD_ERROR_HEADER, message, e.getMessage(), null);
+		} else {
+			showMessage(AlertType.ERROR, ERROR_TITLE, THREAD_ERROR_HEADER, message, "", null);
+		}	
 	}
 }

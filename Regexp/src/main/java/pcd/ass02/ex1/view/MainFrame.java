@@ -177,7 +177,7 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	 */
 	public void setIdle() {
 		this.changeStatus(IDLE_MESSAGE, false, false);
-		this.reset.setDisable(true);
+		Platform.runLater(() -> this.reset.setDisable(true));
 	}
 	
 	/**
@@ -202,6 +202,7 @@ public class MainFrame extends GridPane {//BorderPane {//VBox {
 	 */
 	public void setFinish() {
 		this.changeStatus(FINISH_MESSAGE, false, false);
+		Platform.runLater(() -> this.reset.setDisable(false));
 	}
 	
 	
