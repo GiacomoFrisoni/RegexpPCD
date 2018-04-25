@@ -1,9 +1,12 @@
 package pcd.ass02.ex1.controller;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 
+import pcd.ass02.ex1.model.SearchFileErrorResult;
 import pcd.ass02.ex1.model.SearchFileResult;
+import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
 import pcd.ass02.ex1.view.RegexpView;
 
 /**
@@ -13,13 +16,15 @@ import pcd.ass02.ex1.view.RegexpView;
  *
  */
 public class Consumer extends Thread {
-
-	private final BlockingQueue<SearchFileResult> queue;
+	
+	public static final Optional<SearchFileResult> POISON_PILL = Optional.empty();
+	
+	private final BlockingQueue<Optional<SearchFileResult>> queue;
 	private final RegexpView view;
 	
-	private final int nFiles;
 	private int nLeastOneMatch;
 	private double meanNumberOfMatches;
+	private boolean foundedPoisonPill;
 	
 	/**
 	 * Constructs a new Consumer.
@@ -28,49 +33,61 @@ public class Consumer extends Thread {
 	 * 		the producer / consumer queue
 	 * @param view
 	 * 		the application view
-	 * @param nFiles
-	 * 		the total number of files to compute
 	 */
-	public Consumer(final BlockingQueue<SearchFileResult> queue, final RegexpView view, final int nFiles) {
+	public Consumer(final BlockingQueue<Optional<SearchFileResult>> queue, final RegexpView view) {
+		Objects.requireNonNull(queue);
+		Objects.requireNonNull(view);
 		this.queue = queue;
 		this.view = view;
-		this.nFiles = nFiles;
 		this.nLeastOneMatch = 0;
 		this.meanNumberOfMatches = 0;
+		this.foundedPoisonPill = false;
 	}
 	
 	@Override
 	public void run() {
 		int nComputedFiles = 0;
-		SearchFileResult res;
-		while (nComputedFiles < this.nFiles) {
+		Optional<SearchFileResult> element;
+		while (!this.foundedPoisonPill) {
 			try {
-				res = this.queue.take();
-				nComputedFiles++;
-				final Optional<Integer> nMatches = res.getNumberOfMatches();
-				if (nMatches.isPresent()) {
-					if (nMatches.get() > 0) {
-			        	// Updates the number of files with least one match
-						this.nLeastOneMatch++;
-						// Updates the mean number of matches among files with matches
-						double tmp = this.meanNumberOfMatches;
-						this.meanNumberOfMatches += (nMatches.get() - tmp) / this.nLeastOneMatch;
-					}
-					// Shows file result on view
-					this.view.showResult(res.getPath().toString(), nMatches.get());
+				element = this.queue.take();
+				// Verify that the element is not a poison pill
+				if (element.equals(POISON_PILL)) {
+					this.foundedPoisonPill = true;
 				} else {
-					// Shows file result on view
-					this.view.showResult(res.getPath().toString(), res.getMessage().get());
+					if (element.isPresent()) {
+						final SearchFileResult res = element.get();
+						nComputedFiles++;
+						// Checks the type of the result
+						if (res instanceof SearchFileSuccessfulResult) {
+							final SearchFileSuccessfulResult successfulRes = (SearchFileSuccessfulResult)res;
+							final int nMatches = successfulRes.getNumberOfMatches();
+							if (nMatches > 0) {
+								// Updates the number of files with least one match
+								this.nLeastOneMatch++;
+								// Updates the mean number of matches among files with matches
+								double tmp = this.meanNumberOfMatches;
+								this.meanNumberOfMatches += (nMatches - tmp) / this.nLeastOneMatch;
+							}
+							// Shows file result on view
+							this.view.showResult(res.getPath().toString(), nMatches);
+						} else if (res instanceof SearchFileErrorResult) {
+							final SearchFileErrorResult errorRes = (SearchFileErrorResult)res;
+							// Shows file result on view
+							this.view.showResult(errorRes.getPath().toString(), errorRes.getErrorMessage());
+						}
+						// Shows statistics on view
+						this.view.showMeanNumberOfMatches(this.meanNumberOfMatches);
+						this.view.showLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)nComputedFiles);
+						// Shows analysis progress on view
+						this.view.setNumberOfScannedFiles(nComputedFiles);
+					}	
 				}
-				// Shows statistics on view
-				this.view.showMeanNumberOfMatches(this.meanNumberOfMatches);
-				this.view.showLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)nComputedFiles);
-				// Shows analysis progress on view
-				this.view.setNumberOfScannedFiles(nComputedFiles);
 			} catch (final InterruptedException ie) {
 				this.view.showThreadException("Someone interrupted the consumer when was waiting for something", ie);
-			}	
+			}
 		}
+		this.view.setFinish();
 	}
 	
 }

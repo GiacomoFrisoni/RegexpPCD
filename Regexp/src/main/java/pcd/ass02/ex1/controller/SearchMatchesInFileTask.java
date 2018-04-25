@@ -1,53 +1,65 @@
 package pcd.ass02.ex1.controller;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import pcd.ass02.ex1.model.Document;
+import pcd.ass02.ex1.model.SearchFileErrorResult;
 import pcd.ass02.ex1.model.SearchFileResult;
+import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
 
 /**
  * This class represents a task aimed at searching matches of a given pattern
  * in a specified file.
  *
  */
-public class SearchMatchesInFileTask implements Runnable {
+public class SearchMatchesInFileTask implements Callable<Void> {
 
-	private final File file;
+	private final Path filePath;
 	private final Pattern pattern;
-	private final BlockingQueue<SearchFileResult> queue;
+	private final BlockingQueue<Optional<SearchFileResult>> queue;
 	
 	/**
 	 * Constructs a new file matches research task.
 	 * 
-	 * @param file
-	 * 		the file to use as research input
+	 * @param filePath
+	 * 		the file path to use as research input
 	 * @param pattern
 	 * 		the regex pattern
 	 * @param queue
 	 * 		the producer / consumer queue
 	 */
-	public SearchMatchesInFileTask(final File file, final Pattern pattern, final BlockingQueue<SearchFileResult> queue) {
-		this.file = file;
+	public SearchMatchesInFileTask(final Path filePath, final Pattern pattern, final BlockingQueue<Optional<SearchFileResult>> queue) {
+		Objects.requireNonNull(filePath);
+		Objects.requireNonNull(pattern);
+		Objects.requireNonNull(queue);
+		this.filePath = filePath;
 		this.pattern = pattern;
 		this.queue = queue;
 	}
 	
 	@Override
-	public void run() {
+	public Void call() {
 		try {
-			final Document document = new Document(this.file);
+			final Chrono cron = new Chrono();
+			cron.start();
+			final Document document = new Document(this.filePath);
 			final Matcher matcher = this.pattern.matcher(document.getContent());
 			int nMatches = 0;
 	        while (matcher.find())
 	        	nMatches++;
-			this.queue.add(new SearchFileResult(this.file.toPath(), nMatches));
+			cron.stop();
+			this.queue.add(Optional.of(new SearchFileSuccessfulResult(this.filePath, nMatches, cron.getTime())));
 		} catch (final IOException e) {
-			this.queue.add(new SearchFileResult(this.file.toPath(), e.getLocalizedMessage()));
+			this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, e.getLocalizedMessage())));
 		}
+		return null;
 	}
 
 }

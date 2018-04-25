@@ -1,12 +1,17 @@
 package pcd.ass02.ex1.controller;
 
-import java.io.File;
-import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 import pcd.ass02.ex1.model.SearchFileResult;
@@ -20,29 +25,35 @@ import pcd.ass02.ex1.view.RegexpView;
 public class Master {
 
 	private final ExecutorService executor;
-	private final BlockingQueue<SearchFileResult> queue;
-	private final List<File> files;
+	private final Path startingPath;
 	private final Pattern pattern;
+	private final int maxDepth;
+	private final BlockingQueue<Optional<SearchFileResult>> queue;
 	private final RegexpView view;
 	
 	/**
 	 * Creates a new Master.
 	 * 
-	 * @param files
-	 * 		the collection of file to compute
+	 * @param startingPath
+	 * 		the starting path
 	 * @param pattern
 	 * 		the regex pattern
+	 * @param maxDepth
+	 * 		the max depth navigation
 	 * @param queue
 	 * 		the queue in which to enter the search results of the tasks
+	 * @param view
+	 * 		the application view
 	 */
-	public Master(final List<File> files, final Pattern pattern, final BlockingQueue<SearchFileResult> queue, 
-			final RegexpView view) {
-		Objects.requireNonNull(files);
+	public Master(final Path startingPath, final Pattern pattern, final int maxDepth,
+			final BlockingQueue<Optional<SearchFileResult>> queue, final RegexpView view) {
+		Objects.requireNonNull(startingPath);
 		Objects.requireNonNull(pattern);
 		Objects.requireNonNull(queue);
 		Objects.requireNonNull(view);
-		this.files = files;
+		this.startingPath = startingPath;
 		this.pattern = pattern;
+		this.maxDepth = maxDepth;
 		this.queue = queue;
 		this.view = view;
 		// Calculates the pool size for tasks executor, according to the processors number
@@ -55,18 +66,23 @@ public class Master {
 	 * Submits the tasks for pattern matches research and awaits their termination.
 	 */
 	public void compute() {
-		for (final File file : this.files) {
-			this.executor.submit(new SearchMatchesInFileTask(file, this.pattern, this.queue));
-		}
-		this.executor.shutdown();
+		final Collection<Future<Void>> results = new HashSet<Future<Void>>();
 		try {
-			this.executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+			Files.walkFileTree(this.startingPath, Collections.emptySet(), this.maxDepth,
+					new RegularFileVisitor(
+							(path) -> { results.add(this.executor.submit(new SearchMatchesInFileTask(path, this.pattern, this.queue))); },
+							(nVisitedFiles) -> { this.view.setTotalFilesToScan(nVisitedFiles); }));
+		} catch (final IOException e) {
 			// notify view
-			//System.out.println("Finish");
-			this.view.setFinish();
-		} catch (final InterruptedException e) {
-			this.view.showThreadException("Someone interrupted the master during the await termination", e);
 		}
+		for (final Future<Void> result : results) {
+			try {
+				result.get();
+			} catch (final Exception e) {
+				this.view.showThreadException("Error during the await termination", e);
+			}
+		}
+		this.queue.add(Consumer.POISON_PILL);
 	}
 	
 }

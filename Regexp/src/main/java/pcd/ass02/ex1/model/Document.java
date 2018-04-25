@@ -1,10 +1,10 @@
 package pcd.ass02.ex1.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * This class models a document.
@@ -17,13 +17,13 @@ public class Document {
 	/**
 	 * Constructs a new document.
 	 * 
-	 * @param file
-	 * 		the file from which extract the document
+	 * @param filePath
+	 * 		the file path from which extract the document
 	 * @throws IOException
 	 * 		a problem occurred during file reading
 	 */
-	public Document(final File file) throws IOException {
-		this.content = getFileContent(file, StandardCharsets.UTF_8);
+	public Document(final Path filePath) throws IOException {
+		this.content = getFileContent(filePath, StandardCharsets.UTF_8);
 	}
 	
 	/**
@@ -36,13 +36,14 @@ public class Document {
 	/*
 	 * Gets the string content of the specified file.
 	 */
-	private static String getFileContent(final File file, final Charset encoding) throws IOException {
+	private static String getFileContent(final Path filePath, final Charset encoding) throws IOException {
 		try {
-			final byte[] encoded = Files.readAllBytes(file.toPath());
+			final byte[] encoded = Files.readAllBytes(filePath);
 			return new String(encoded, encoding);
-		} catch (final Exception ex) {
-			return null;
+		} catch (Exception ex) {
+			System.out.println(ex.getLocalizedMessage());
 		}
+		return null;
 	}
 
 }
