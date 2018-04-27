@@ -49,6 +49,9 @@ public class MatcherVerticle extends AbstractVerticle {
 				}
 			});
 		});
+		vertx.eventBus().consumer("end", message -> {
+			vertx.undeploy(this.deploymentID());
+		});
 	}
 	
 }

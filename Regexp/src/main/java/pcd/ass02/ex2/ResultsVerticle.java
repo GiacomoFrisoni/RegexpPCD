@@ -55,6 +55,8 @@ public class ResultsVerticle extends AbstractVerticle {
 			this.nTotalFiles.ifPresent(total -> {
 				if (this.nComputedFiles == total) {
 					this.view.setFinish();
+					vertx.undeploy(this.deploymentID());
+					vertx.eventBus().send("end", null);
 				}
 			});
 		});
@@ -62,6 +64,8 @@ public class ResultsVerticle extends AbstractVerticle {
 			this.nTotalFiles = Optional.of((int)message.body());
 			if (this.nComputedFiles == this.nTotalFiles.get()) {
 				this.view.setFinish();
+				vertx.undeploy(this.deploymentID());
+				vertx.eventBus().send("end", null);
 			}
 		});
 	}
