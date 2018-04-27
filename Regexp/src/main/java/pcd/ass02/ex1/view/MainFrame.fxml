@@ -100,7 +100,7 @@
 					<Label text="/"></Label>
 					<Label fx:id="totalToScan" text="$defaultValue"></Label>
 				</HBox>
-				<Label text="files and folders"></Label>
+				<Label text="files"></Label>
 			</HBox>
 		</HBox>
 		
