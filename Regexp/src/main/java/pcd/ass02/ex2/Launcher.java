@@ -1,4 +1,4 @@
-package pcd.ass02.ex2.model;
+package pcd.ass02.ex2;
 
 import javafx.application.Application;
 import javafx.stage.Stage;

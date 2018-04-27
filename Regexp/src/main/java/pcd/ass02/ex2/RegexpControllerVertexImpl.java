@@ -1,10 +1,16 @@
-package pcd.ass02.ex2.model;
+package pcd.ass02.ex2;
 
 import java.util.Objects;
 
+import com.google.gson.Gson;
+
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import pcd.ass02.ex1.controller.RegexpController;
 import pcd.ass02.ex1.model.RegexpResearchData;
+import pcd.ass02.ex1.model.SearchFileErrorResult;
+import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
 import pcd.ass02.ex1.view.RegexpView;
 
 public class RegexpControllerVertexImpl implements RegexpController {
@@ -57,9 +63,27 @@ public class RegexpControllerVertexImpl implements RegexpController {
 		if (this.model.getStartingPath().isPresent()) {
 			if (this.model.getPattern().isPresent()) {
 				final Vertx vertx = Vertx.vertx();
-				final MainVerticle myVerticle = new MainVerticle(this.view, this.model.getStartingPath().get(),
-						this.model.getPattern().get(), this.model.getMaxDepth());
-				vertx.deployVerticle(myVerticle);
+				
+				// Registers the codecs on the event bus in order to send results objects
+			    vertx.eventBus().registerDefaultCodec(SearchFileSuccessfulResult.class, new SuccessfulResultMessageCodec());
+			    vertx.eventBus().registerDefaultCodec(SearchFileErrorResult.class, new ErrorResultMessageCodec());
+				
+				// Deploys matcher verticles
+				final JsonObject config = new JsonObject().put("pattern", new Gson().toJson(this.model.getPattern().get()));
+				final DeploymentOptions options = new DeploymentOptions()
+						.setInstances(Runtime.getRuntime().availableProcessors() - 1)
+						.setConfig(config);
+				vertx.deployVerticle(MatcherVerticle.class.getCanonicalName(), options);
+				
+				// Deploys the results handler verticle
+				final ResultsVerticle resultsVerticle = new ResultsVerticle(this.view);
+				vertx.deployVerticle(resultsVerticle);
+				
+				// Deploys the analyzer verticle
+				final AnalyzerVerticle analyzerVerticle = new AnalyzerVerticle(this.view, this.model.getStartingPath().get(),
+						this.model.getMaxDepth());
+				vertx.deployVerticle(analyzerVerticle);
+				
 				return true;
 			} else {
 				this.view.showInputError("The regular expression is not specified");

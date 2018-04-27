@@ -67,8 +67,8 @@ public class Consumer extends Thread {
 								// Updates the number of files with least one match
 								this.nLeastOneMatch++;
 								// Updates the mean number of matches among files with matches
-								final double tmp = this.meanNumberOfMatches;
-								this.meanNumberOfMatches += (nMatches - tmp) / this.nLeastOneMatch;
+								final double oldMean = this.meanNumberOfMatches;
+								this.meanNumberOfMatches += (nMatches - oldMean) / this.nLeastOneMatch;
 							}
 							// Shows file result on view
 							this.view.showResult(successfulRes.getPath().toString(), nMatches, successfulRes.getElapsedTime());
