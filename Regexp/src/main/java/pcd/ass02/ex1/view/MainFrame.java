@@ -59,6 +59,9 @@ public class MainFrame extends GridPane {
 	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 	
 	@FXML
+	private Integer defaultValue;
+	
+	@FXML
 	private TextField path, regularExpression, depth;
 	
 	@FXML
@@ -215,6 +218,10 @@ public class MainFrame extends GridPane {
 			this.regularExpression.clear();
 			this.depth.setText("1");
 			this.maxDepth.setSelected(false);
+			this.leastOneMatchPercentage.setText(defaultValue + PERCENTAGE_SYMBOL);
+			this.meanNumberOfMatches.setText("" + defaultValue);
+			this.currentScanned.setText("" + defaultValue);
+			this.totalToScan.setText("" + defaultValue);
 		
 			this.choosePath.setDisable(false);
 			this.path.setDisable(false);
