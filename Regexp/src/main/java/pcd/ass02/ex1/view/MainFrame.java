@@ -222,6 +222,7 @@ public class MainFrame extends GridPane {
 			this.meanNumberOfMatches.setText("" + defaultValue);
 			this.currentScanned.setText("" + defaultValue);
 			this.totalToScan.setText("" + defaultValue);
+			this.progressBar.setProgress(defaultValue);
 		
 			this.choosePath.setDisable(false);
 			this.path.setDisable(false);
@@ -271,9 +272,7 @@ public class MainFrame extends GridPane {
 		if (total > 0) {
 			this.totalFilesToScan = total;
 			Platform.runLater(() -> {
-				this.totalToScan.setText("" + total);
-				// Resets the progress bar
-				this.progressBar.setProgress(0);
+				this.totalToScan.setText("" + total);				
 			});
 		} else {
 			throw new IllegalArgumentException(ILLEGAL_ARGUMENT_MESSAGE);
@@ -290,7 +289,6 @@ public class MainFrame extends GridPane {
 		if (this.totalFilesToScan > 0) {
 			Platform.runLater(() -> {
 				this.currentScanned.setText("" + nScanned);
-				// Updates the progress bar
 				this.progressBar.setProgress(nScanned/this.totalFilesToScan);
 			});
 		} else {
@@ -423,29 +421,20 @@ public class MainFrame extends GridPane {
 		tcTime.setCellValueFactory(new PropertyValueFactory<RowType, String>(TIME_PROPERTY_NAME));
 		
 		//They can be both string or integers, I try to sort them
-		tcValue.setComparator(new Comparator<String>() {		
-			@Override
-			public int compare(String o1, String o2) {
-				Integer val1 = null;
-				Integer val2 = null;
-				
-				try {
-					val1 = Integer.parseInt(o1);
-				} catch (Exception e) {
-					//First is a string
-					return -1;
-				}
-				
-				try {
-					val2 = Integer.parseInt(o2);
-				} catch (Exception e) {
-					//Second is a string
-					return 1;
-				}
-				
-				//Both are integers
-				return val2 - val1;	
-			}
+		tcValue.setComparator((string1, string2) -> {
+			Integer val1 = null;
+			Integer val2 = null;
+			
+			//Check if first is a string
+			try { val1 = Integer.parseInt(string1); } 
+			catch (Exception e) { return -1; }
+			
+			//Check if second is a string
+			try { val2 = Integer.parseInt(string2); } 
+			catch (Exception e) { return 1; }
+			
+			//Both are integers
+			return val2 - val1;	
 		});
 		
 		//Stretch the first column
