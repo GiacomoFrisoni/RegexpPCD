@@ -21,7 +21,7 @@ import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
  */
 public class SearchMatchesInFileTask implements Callable<Void> {
 
-	private final static long MAX_FILE_SIZE = 32768000;
+	private final static long MAX_FILE_SIZE = 262144000;
 	private final static String FILE_TOO_LARGE_MESSAGE = "Too large to analyze";
 	
 	private final Path filePath;
