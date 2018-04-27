@@ -50,9 +50,9 @@ public class SearchMatchesInFileTask implements Callable<Void> {
 	@Override
 	public Void call() {
 		try {
-			if (this.filePath.toFile().length() < MAX_FILE_SIZE) {			
+			if (this.filePath.toFile().length() < MAX_FILE_SIZE) {
 				final Chrono cron = new Chrono();
-				cron.start();	
+				cron.start();
 				final Document document = new Document(this.filePath);
 				final Matcher matcher = this.pattern.matcher(document.getContent());
 				int nMatches = 0;

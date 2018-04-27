@@ -1,9 +1,8 @@
 package pcd.ass02.ex2;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,16 +13,38 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.file.FileProps;
 import io.vertx.core.file.FileSystem;
+import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
+import pcd.ass02.ex1.model.SearchFileErrorResult;
 import pcd.ass02.ex1.view.RegexpView;
 
+/**
+ * This {@link AbstractVerticle} represents the event loop for the analysis of the files nested
+ * in the specified starting path, on which research the pattern matches.
+ * For each file founded, a message with the path is sent on the event bus.
+ *
+ */
 public class AnalyzerVerticle extends AbstractVerticle {
 
+	private final static long MAX_FILE_SIZE = 524288000;
+	private final static String FILE_TOO_LARGE_MESSAGE = "Too large to analyze";
+	private static final String FILE_NOT_EXISTS_MESSAGE = "The file does not exists";
+	private static final String ANALYSIS_EXCEPTION_MESSAGE = "Un exception has occurred during the analysis of the subtree";
+	
 	private final RegexpView view;
 	private final Path startingPath;
 	private final int maxDepth;
 	private int nVisitedFiles;
-	private final List<Future> futures;
 	
+	/**
+	 * Constructs a new analyzer verticle.
+	 * 
+	 * @param view
+	 * 		the application view
+	 * @param startingPath
+	 * 		the starting path for the analysis
+	 * @param maxDepth
+	 * 		the max depth for the navigation
+	 */
 	public AnalyzerVerticle(final RegexpView view, final Path startingPath, final int maxDepth) {
 		Objects.requireNonNull(view);
 		Objects.requireNonNull(startingPath);
@@ -31,17 +52,17 @@ public class AnalyzerVerticle extends AbstractVerticle {
 		this.startingPath = startingPath;
 		this.maxDepth = maxDepth;
 		this.nVisitedFiles = 0;
-		this.futures = new ArrayList<Future>();
 	}
 
 	@Override
 	public void start(final Future<Void> done) throws Exception {
 		searchPattern(this.startingPath.toString(), this.maxDepth, handler -> {
 			if (handler.failed()) {
-				// this.view.showThreadException(handler.cause().getMessage(), null);
-				handler.cause().printStackTrace();
+				this.view.setFinish();
+				this.view.showException(ExceptionType.IO_EXCEPTION,
+						ANALYSIS_EXCEPTION_MESSAGE,
+						new Exception(handler.cause()));
 			} else {
-				// this.view.setFinish();
 				this.vertx.eventBus().send("totalFiles", this.nVisitedFiles);
 			}
 		});
@@ -51,10 +72,13 @@ public class AnalyzerVerticle extends AbstractVerticle {
 		analyzeFile(path, depth).setHandler(handler);
 	}
 	
-	private Future analyzeFile(final String path, final int depth) {
-		final Future<Void> future = Future.future();
+	private Future<Void> analyzeFile(final String path, final int depth) {
 		final FileSystem fs = vertx.fileSystem();
 		
+		// Declares the future for the analysis of the current file
+		final Future<Void> future = Future.future();
+		
+		// Checks the base case
 		if (depth >= 0) {
 			
 			final Future<Boolean> fExists = Future.future();
@@ -67,40 +91,66 @@ public class AnalyzerVerticle extends AbstractVerticle {
 					future.fail(existsHandler.cause());
 				} else {
 					if (existsHandler.result()) {
+						// If the file exists, checks its properties
 						fs.lprops(path, fProps.completer());
 					} else {
-						// non esiste
+						// If the file does not exists...
+						future.fail(FILE_NOT_EXISTS_MESSAGE);
 					}
 				}
 			});
 			fProps.setHandler((AsyncResult<FileProps> propsHandler) -> {
-				if (propsHandler.failed()) {
-					future.fail(propsHandler.cause());
-				} else {
-					if (propsHandler.result().isDirectory()) {
+				// If the access to the file properties fails, the subtree is skipped.
+				if (propsHandler.succeeded()) {
+					final FileProps props = propsHandler.result();
+					// If the file is a directory, reads it
+					if (props.isDirectory()) {
 						fs.readDir(path, fReadDir.completer());
 					} else {
-						this.view.setTotalFilesToScan(++this.nVisitedFiles);
-						vertx.eventBus().send("fileToAnalyze", path);
-						future.complete();
+						// Checks the file dimension
+						if (props.size() < MAX_FILE_SIZE) {
+							/*
+							 * If the file is not a directory, updates the number of discovered
+							 * files, sends a message and set the future as successful completed.
+							 */
+							this.view.setTotalFilesToScan(++this.nVisitedFiles);
+							vertx.eventBus().send("fileToAnalyze", path);
+							future.complete();
+						} else {
+							vertx.eventBus().send("result", new SearchFileErrorResult(Paths.get(path),
+									FILE_TOO_LARGE_MESSAGE));
+							future.complete();
+						}
 					}
+				} else {
+					future.complete();
 				}
 			});
 			fReadDir.setHandler((AsyncResult<List<String>> readDirHandler) -> {
-				if (readDirHandler.failed()) {
-					future.fail(readDirHandler.cause());
-				} else {
+				/*
+				 * If the read operation of the directory has succeeded, goes on.
+				 * So, if the visit of the file has encountered a failure, the subtree is skipped.
+				 */
+				if (readDirHandler.succeeded()) {
+					@SuppressWarnings("rawtypes")
+					final List<Future> futures = new ArrayList<Future>();
+					// Makes the recursive calls on the children of the directory
 					final List<String> pathFiles = readDirHandler.result();
 					for (final String pathFile : pathFiles) {
 						futures.add(analyzeFile(pathFile, depth - 1));
 					}
-					CompositeFuture.all(this.futures).setHandler((AsyncResult<CompositeFuture> res) -> {
+					// Sets events for the completion of all children
+					CompositeFuture.all(futures).setHandler((AsyncResult<CompositeFuture> res) -> {
 						if (res.failed()) {
+							// At least one file children failed
 							future.fail(res.cause());
 						} else {
+							// All files children succeeded
 							future.complete();
 						}
 					});
+				} else {
+					future.complete();
 				}
 			});
 		}

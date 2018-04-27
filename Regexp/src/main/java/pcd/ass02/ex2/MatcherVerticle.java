@@ -29,7 +29,6 @@ public class MatcherVerticle extends AbstractVerticle {
 			cron.start();
 			fs.readFile(path, readFileHandler -> {
 				if (readFileHandler.failed()) {
-					done.fail(readFileHandler.cause());
 					vertx.eventBus().send("result", new SearchFileErrorResult(Paths.get(path),
 							readFileHandler.cause().getLocalizedMessage()));
 				} else {
