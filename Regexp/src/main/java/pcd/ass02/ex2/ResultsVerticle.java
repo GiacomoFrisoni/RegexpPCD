@@ -1,5 +1,7 @@
 package pcd.ass02.ex2;
 
+import java.util.Optional;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import pcd.ass02.ex1.model.SearchFileErrorResult;
@@ -12,6 +14,8 @@ public class ResultsVerticle extends AbstractVerticle {
 	private int nLeastOneMatch;
 	private double meanNumberOfMatches;
 	private int nComputedFiles;
+	
+	private Optional<Integer> nTotalFiles;
 
 	
 	public ResultsVerticle(final RegexpView view) {
@@ -19,6 +23,7 @@ public class ResultsVerticle extends AbstractVerticle {
 		this.nLeastOneMatch = 0;
 		this.meanNumberOfMatches = 0;
 		this.nComputedFiles = 0;
+		this.nTotalFiles = Optional.empty();
 	}
 
 	@Override
@@ -46,6 +51,18 @@ public class ResultsVerticle extends AbstractVerticle {
 			this.view.showLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)nComputedFiles);
 			// Shows analysis progress on view
 			this.view.setNumberOfScannedFiles(++this.nComputedFiles);
+			
+			this.nTotalFiles.ifPresent(total -> {
+				if (this.nComputedFiles == total) {
+					this.view.setFinish();
+				}
+			});
+		});
+		vertx.eventBus().consumer("totalFiles", message -> {
+			this.nTotalFiles = Optional.of((int)message.body());
+			if (this.nComputedFiles == this.nTotalFiles.get()) {
+				this.view.setFinish();
+			}
 		});
 	}
 	
