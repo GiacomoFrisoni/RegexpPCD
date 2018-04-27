@@ -25,7 +25,7 @@ import pcd.ass02.ex1.view.RegexpView;
  */
 public class AnalyzerVerticle extends AbstractVerticle {
 
-	private final static long MAX_FILE_SIZE = 524288000;
+	private final static long MAX_FILE_SIZE = 32768000;
 	private final static String FILE_TOO_LARGE_MESSAGE = "Too large to analyze";
 	private static final String FILE_NOT_EXISTS_MESSAGE = "The file does not exists";
 	private static final String ANALYSIS_EXCEPTION_MESSAGE = "Un exception has occurred during the analysis of the subtree";
