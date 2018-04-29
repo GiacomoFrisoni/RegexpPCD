@@ -98,7 +98,7 @@ public class MainBindingFrame extends GridPane {
         //Set bindings
         this.totalToScan.textProperty().bind(ViewDataManager.getHandler().numberOfVisitedFilesProperty().asString());
         this.currentScanned.textProperty().bind(ViewDataManager.getHandler().numberOfComputedFilesProperty().asString());
-        this.leastOneMatchPercentage.textProperty().bind(ViewDataManager.getHandler().leastOneMatchPercentageProperty().asString(DOUBLE_FORMAT));
+        this.leastOneMatchPercentage.textProperty().bind(ViewDataManager.getHandler().leastOneMatchPercentageProperty().multiply(100.0).asString(DOUBLE_FORMAT));
         this.meanNumberOfMatches.textProperty().bind(ViewDataManager.getHandler().meanNumberOfMatchesProperty().asString(DOUBLE_FORMAT));
 	}
 	
