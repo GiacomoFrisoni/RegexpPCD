@@ -25,6 +25,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import pcd.ass02.ex1.controller.RegexpController;
+import pcd.ass02.ex3.controller.DataManager;
 
 public class MainFrame extends GridPane {
 	
@@ -104,14 +105,17 @@ public class MainFrame extends GridPane {
 		
         try {
             fxmlLoader.load();
-            this.setDimensions();
-            this.setEventHandlers();
-            this.setTableColumns();
-            this.setIdle();
         } catch (Exception exception) {
         	MessageUtils.showFXMLException(this.toString(), exception);
         	exception.printStackTrace();
         }
+        
+        //Set view
+        this.getStylesheets().add(getClass().getResource("..\\..\\ex1\\view\\style.css").toExternalForm());
+        this.setDimensions();
+        this.setEventHandlers();
+        this.setTableColumns();
+        this.setIdle();
 	}
 	
 	private void setDimensions() {
