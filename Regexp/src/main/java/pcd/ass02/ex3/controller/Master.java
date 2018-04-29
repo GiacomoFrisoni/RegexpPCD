@@ -1,15 +1,18 @@
 package pcd.ass02.ex3.controller;
 
-import java.nio.file.FileVisitOption;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -32,6 +35,9 @@ public class Master {
 	private final Pattern pattern;
 	private final int maxDepth;
 	private final RegexpBindingView view;
+	private int nVisitedFiles;
+	private int nComputedFiles;
+	private double meanNumberOfMatches;
 	private int nLeastOneMatch;
 	
 	/**
@@ -59,6 +65,9 @@ public class Master {
 		this.maxDepth = maxDepth;
 		this.executor = executor;
 		this.view = view;
+		this.nVisitedFiles = 0;
+		this.nComputedFiles = 0;
+		this.meanNumberOfMatches = 0;
 		this.nLeastOneMatch = 0;
 	}
 	
@@ -68,28 +77,39 @@ public class Master {
 	public void compute() {
 		final Collection<Future<SearchFileResult>> results = new HashSet<Future<SearchFileResult>>();
 		
-		try {
-			// Creates a stream of the files' paths to analyze
-			final Stream<Path> streamPaths = Files
-					.walk(this.startingPath, this.maxDepth, FileVisitOption.values())
-					.filter(path -> !Files.isDirectory(path));
-			// Creates an observable from the stream of path and an associated observer
-			Observable
-			.fromIterable(new StreamIterable<Path>(streamPaths))
-			.subscribe((Path path) -> {
-				results.add(this.executor.submit(new SearchMatchesInFileTask(path, this.pattern)));
-				DataManager.getHandler().incNumberOfVisitedFiles();
-			});
-		} catch (final Exception e) {
-			// Skip subtree
-		}
+		final Observable<Path> pathSource = Observable.create(emitter -> {
+			try {
+				Files.walkFileTree(this.startingPath, Collections.emptySet(), this.maxDepth, new SimpleFileVisitor<Path>() {
+					@Override
+					public FileVisitResult visitFile(final Path path, final BasicFileAttributes attrs) throws IOException {
+						if(!attrs.isDirectory()) {
+							emitter.onNext(path);
+						}
+						return FileVisitResult.CONTINUE;
+					}
+					
+					@Override
+					public FileVisitResult visitFileFailed(final Path file, final IOException io)
+					{   
+					    return FileVisitResult.SKIP_SUBTREE;
+					}
+				});
+			} catch (final IOException e) {
+				this.view.showException(ExceptionType.IO_EXCEPTION, "Error during the visiting of a file", e);
+			}
+		});
+		
+		pathSource.subscribe((path) -> {
+			results.add(this.executor.submit(new SearchMatchesInFileTask(path, this.pattern)));
+			DataManager.getHandler().setNumberOfVisitedFiles(++this.nVisitedFiles);
+		});
 		
 		/*
 		 * Creates a stream of search results.
 		 * It uses a back pressure strategy in order to handle the potentially lower speed
 		 * of the observer. 
 		 */
-		final Flowable<SearchFileResult> resultSource = Flowable.create(emitter -> {     
+		final Flowable<SearchFileResult> resultSource = Flowable.create(emitter -> {
 			new Thread(() -> {
 				for (final Future<SearchFileResult> result : results) {
 					try {
@@ -104,7 +124,7 @@ public class Master {
 		
 		// Defines a search results observer
 		resultSource.subscribe((result) -> {
-			DataManager.getHandler().incNumberOfComputedFiles();
+			DataManager.getHandler().setNumberOfComputedFiles(++this.nComputedFiles);
 			// Checks the type of the result
 			if (result instanceof SearchFileSuccessfulResult) {
 				final SearchFileSuccessfulResult successfulRes = (SearchFileSuccessfulResult)result;
@@ -113,9 +133,9 @@ public class Master {
 					// Updates the number of files with least one match
 					this.nLeastOneMatch++;
 					// Updates the mean number of matches among files with matches
-					final double oldMean = DataManager.getHandler().getMeanNumberOfMatches();
-					DataManager.getHandler().setMeanNumberOfMatches(oldMean
-							+ ((nMatches - oldMean) / this.nLeastOneMatch));
+					final double oldMean = this.meanNumberOfMatches;
+					this.meanNumberOfMatches += (nMatches - oldMean) / this.nLeastOneMatch;
+					DataManager.getHandler().setMeanNumberOfMatches(this.meanNumberOfMatches);
 				}
 				// Shows file result on view
 				DataManager.getHandler().addResult(successfulRes.getPath().toString(), nMatches, successfulRes.getElapsedTime());
@@ -125,11 +145,8 @@ public class Master {
 				DataManager.getHandler().addResult(errorRes.getPath().toString(), errorRes.getErrorMessage());
 			}
 			// Shows statistics on view
-			DataManager.getHandler().setLeastOneMatchPercentage((double)this.nLeastOneMatch /
-					(double)DataManager.getHandler().getNumberOfComputedFiles());
+			DataManager.getHandler().setLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)this.nComputedFiles);
 			// this.view.showLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)this.nComputedFiles);
-			// Shows analysis progress on view
-			// this.view.setNumberOfScannedFiles(this.nComputedFiles);
 		});
 	}
 	

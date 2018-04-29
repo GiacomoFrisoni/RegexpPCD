@@ -49,12 +49,8 @@ public class DataManager {
     
 	// Number of visited files handler
     
-	public void incNumberOfVisitedFiles() {
-		Platform.runLater(() -> this.nVisitedFiles.set(this.nVisitedFiles.get() + 1));
-	}
-	
-	public int getNumberOfVisitedFiles() {
-		return this.nVisitedFiles.get();
+	public void setNumberOfVisitedFiles(final int value) {
+		Platform.runLater(() -> this.nVisitedFiles.set(value));
 	}
 	
 	public IntegerProperty numberOfVisitedFilesProperty() {
@@ -64,12 +60,8 @@ public class DataManager {
 
 	// Number of computed files handler
 	
-	public void incNumberOfComputedFiles() {
-		Platform.runLater(() -> this.nComputedFiles.set(this.nComputedFiles.get() + 1));
-	}
-	
-	public int getNumberOfComputedFiles() {
-		return this.nComputedFiles.get();
+	public void setNumberOfComputedFiles(final int value) {
+		Platform.runLater(() -> this.nComputedFiles.set(value));
 	}
 	
 	public IntegerProperty numberOfComputedFilesProperty() {
@@ -83,10 +75,6 @@ public class DataManager {
 		Platform.runLater(() -> this.meanNumberOfMatches.set(value));
 	}
 
-	public double getMeanNumberOfMatches() {
-		return this.meanNumberOfMatches.get();
-	}
-
 	public DoubleProperty meanNumberOfMatchesProperty() {
 		return this.meanNumberOfMatches;
 	}
@@ -96,10 +84,6 @@ public class DataManager {
 
 	public void setLeastOneMatchPercentage(final double value) {
 		Platform.runLater(() -> this.leastOneMatchPercentage.set(value));
-	}
-
-	public double getLeastOneMatchPercentage() {
-		return this.leastOneMatchPercentage.get();
 	}
 
 	public DoubleProperty leastOneMatchPercentageProperty() {
