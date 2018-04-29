@@ -73,7 +73,7 @@ public class Master {
 							(path) -> { results.add(this.executor.submit(new SearchMatchesInFileTask(path, this.pattern, this.queue))); },
 							(nVisitedFiles) -> { this.view.setTotalFilesToScan(nVisitedFiles); }));
 		} catch (final IOException e) {
-			this.view.showException(ExceptionType.IO_EXCEPTION, "Error during reading files", e);
+			this.view.showException(ExceptionType.IO_EXCEPTION, "Error during the visiting of a file", e);
 		}
 		for (final Future<Void> result : results) {
 			try {
