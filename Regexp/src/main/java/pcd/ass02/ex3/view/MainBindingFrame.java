@@ -101,6 +101,7 @@ public class MainBindingFrame extends GridPane {
         this.leastOneMatchPercentage.textProperty().bind(ViewDataManager.getHandler().leastOneMatchPercentageProperty().multiply(100.0).asString(DOUBLE_FORMAT));
         this.meanNumberOfMatches.textProperty().bind(ViewDataManager.getHandler().meanNumberOfMatchesProperty().asString(DOUBLE_FORMAT));
         this.totalElapsedTime.textProperty().bind(ViewDataManager.getHandler().getTotalElapsedTimeProperty().asString());
+        this.progressBar.progressProperty().bind(ViewDataManager.getHandler().getProgressProperty());
 	}
 	
 	private void setDimensions() {

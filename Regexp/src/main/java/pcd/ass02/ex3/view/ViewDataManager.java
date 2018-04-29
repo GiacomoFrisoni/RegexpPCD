@@ -19,6 +19,7 @@ public class ViewDataManager {
 	private final SimpleLongProperty totalElapsedTime = new SimpleLongProperty();
 	private final SimpleDoubleProperty leastOneMatchPercentage = new SimpleDoubleProperty();
 	private final SimpleDoubleProperty meanNumberOfMatches = new SimpleDoubleProperty();
+	private final SimpleDoubleProperty progress = new SimpleDoubleProperty();
 	
 	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 
@@ -29,6 +30,7 @@ public class ViewDataManager {
 		this.totalElapsedTime.set(0);
 		this.leastOneMatchPercentage.set(0.0);
 		this.meanNumberOfMatches.set(0.0);
+		this.progress.set(0.0);
     };
     
 
@@ -59,7 +61,13 @@ public class ViewDataManager {
      * 		number of visited files
      */
 	public void setNumberOfVisitedFiles(final int value) {
-		Platform.runLater(() -> this.nVisitedFiles.set(value));
+		Platform.runLater(() -> {
+			this.nVisitedFiles.set(value);
+			
+			if (this.nVisitedFiles.get() > 0) {
+				this.progress.set(((double)this.nComputedFiles.get()) / ((double)this.nVisitedFiles.get()));
+			}
+		});
 	}
 	
 	/**
@@ -77,10 +85,16 @@ public class ViewDataManager {
     /**
      * Set the number of computed files (scanned and parsed)
      * @param value
-     * 		number of visited files
+     * 		number of computed files
      */
 	public void setNumberOfComputedFiles(final int value) {
-		Platform.runLater(() -> this.nComputedFiles.set(value));
+		Platform.runLater(() -> {
+			this.nComputedFiles.set(value);
+			
+			if (this.nVisitedFiles.get() > 0) {
+				this.progress.set(((double)this.nComputedFiles.get()) / ((double)this.nVisitedFiles.get()));
+			}
+		});
 	}
 	
 	/**
@@ -179,6 +193,17 @@ public class ViewDataManager {
 	 */
 	public SimpleLongProperty getTotalElapsedTimeProperty() {
 		return this.totalElapsedTime;
+	}
+	
+	//Progress
+	
+	/**
+	 * Get the progress property ready to bind
+	 * @return
+	 * 		progress property
+	 */
+	public SimpleDoubleProperty getProgressProperty() {
+		return this.progress;
 	}
 	
 }
