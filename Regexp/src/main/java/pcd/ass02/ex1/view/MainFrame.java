@@ -2,7 +2,6 @@ package pcd.ass02.ex1.view;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.Comparator;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -25,7 +24,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import pcd.ass02.ex1.controller.RegexpController;
-import pcd.ass02.ex3.controller.DataManager;
 
 public class MainFrame extends GridPane {
 	
@@ -313,8 +311,6 @@ public class MainFrame extends GridPane {
 	public void addResult(final String path, final int nMatches, final long time) {	
 		Platform.runLater(() -> {
 			resultRows.add(new RowType(path, "" + nMatches, time));
-			//tableView.scrollTo(this.resultRows.size() - 1);
-			//System.out.println(path);
 		});
 	}
 	
@@ -329,8 +325,6 @@ public class MainFrame extends GridPane {
 	public void addResult(final String path, final String message) {
 		Platform.runLater(() -> {
 			resultRows.add(new RowType(path, message, 0));
-			//tableView.scrollTo(this.resultRows.size() - 1);
-			//System.out.println(path + "["+ message +"]");
 		});
 	}
 
