@@ -6,6 +6,11 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;
 import pcd.ass02.ex1.model.SearchFileErrorResult;
 
+/**
+ * This class defines a custom message codec in order to send error results
+ * objects across the event bus.
+ *
+ */
 public class ErrorResultMessageCodec implements MessageCodec<SearchFileErrorResult, SearchFileErrorResult> {
 
 	private static final int INT_BYTES_DIMENSION = 4;

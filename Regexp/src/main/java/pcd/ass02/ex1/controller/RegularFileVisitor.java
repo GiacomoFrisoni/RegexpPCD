@@ -8,12 +8,26 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+/**
+ * This class represents a custom visitor for regular files.
+ * It specifies the operation to perform for each discovered file and for each update
+ * of the number of visited files.
+ *
+ */
 public class RegularFileVisitor extends SimpleFileVisitor<Path> {
 
 	private final Consumer<Path> pathHandler;
 	private final Consumer<Integer> visitedFilesHandler;
 	private int nVisitedFiles;
 	
+	/**
+	 * Constructs a new regular file visitor.
+	 * 
+	 * @param pathHandler
+	 * 		the handler for each discovered path
+	 * @param visitedFilesHandler
+	 * 		the handler for the number of discovered files
+	 */
 	public RegularFileVisitor(final Consumer<Path> pathHandler, final Consumer<Integer> visitedFilesHandler) {
 		Objects.requireNonNull(pathHandler);
 		Objects.requireNonNull(visitedFilesHandler);

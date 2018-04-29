@@ -8,6 +8,11 @@ import pcd.ass02.ex1.model.SearchFileErrorResult;
 import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
 import pcd.ass02.ex1.view.RegexpView;
 
+/**
+ * This {@link AbstractVerticle} represents the event loop for the management
+ * of the produced pattern matches results and the calculation of the statistics.
+ *
+ */
 public class ResultsVerticle extends AbstractVerticle {
 	
 	private final RegexpView view;
@@ -17,7 +22,12 @@ public class ResultsVerticle extends AbstractVerticle {
 	
 	private Optional<Integer> nTotalFiles;
 
-	
+	/**
+	 * Constructs a new results verticle.
+	 * 
+	 * @param view
+	 * 		the application view
+	 */
 	public ResultsVerticle(final RegexpView view) {
 		this.view = view;
 		this.nLeastOneMatch = 0;
@@ -28,6 +38,7 @@ public class ResultsVerticle extends AbstractVerticle {
 
 	@Override
 	public void start(final Future<Void> done) throws Exception {
+		// Handles results and shows them across the view
 		vertx.eventBus().consumer("result", message -> {
 			if (message.body() instanceof SearchFileSuccessfulResult) {
 				final SearchFileSuccessfulResult result = (SearchFileSuccessfulResult)message.body();
@@ -60,6 +71,7 @@ public class ResultsVerticle extends AbstractVerticle {
 				}
 			});
 		});
+		// Destroys itself when the end message is received
 		vertx.eventBus().consumer("totalFiles", message -> {
 			this.nTotalFiles = Optional.of((int)message.body());
 			if (this.nComputedFiles == this.nTotalFiles.get()) {

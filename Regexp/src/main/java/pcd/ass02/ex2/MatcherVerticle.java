@@ -14,16 +14,22 @@ import pcd.ass02.ex1.controller.Chrono;
 import pcd.ass02.ex1.model.SearchFileErrorResult;
 import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
 
+/**
+ * This {@link AbstractVerticle} represents the event loop for the research of the regex
+ * pattern in the files to analyze.
+ * For each computed file, a message with the associated result is sent on the event bus.
+ *
+ */
 public class MatcherVerticle extends AbstractVerticle {
 	
-	public MatcherVerticle() {
-	}
+	public MatcherVerticle() { }
 
 	@Override
 	public void start(final Future<Void> done) throws Exception {
 		final Pattern pattern = new Gson().fromJson(config().getString("pattern"), Pattern.class);
 		final FileSystem fs = vertx.fileSystem();
 		final Chrono cron = new Chrono();
+		// Search pattern matches
 		vertx.eventBus().consumer("fileToAnalyze", message -> {
 			final String path = (String) message.body();
 			cron.start();
@@ -49,6 +55,7 @@ public class MatcherVerticle extends AbstractVerticle {
 				}
 			});
 		});
+		// Destroys itself when the end message is received
 		vertx.eventBus().consumer("end", message -> {
 			vertx.undeploy(this.deploymentID());
 		});

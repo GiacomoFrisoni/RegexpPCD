@@ -1,11 +1,12 @@
-package pcd.ass02.ex1.controller;
+package pcd.ass02.ex3.controller;
 
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import pcd.ass02.ex1.controller.RegexpController;
 import pcd.ass02.ex1.model.RegexpResearchData;
-import pcd.ass02.ex1.view.RegexpView;
+import pcd.ass02.ex3.view.RegexpBindingView;
 
 /**
  * Implementation of {@link RegexpController}.
@@ -13,25 +14,17 @@ import pcd.ass02.ex1.view.RegexpView;
  */
 public class RegexpControllerImpl implements RegexpController {
 
-	private static final String INVALID_PATH = "Invalid path";
-	private static final String INVALID_REGEX = "Invalid regular expression syntax";
-	private static final String INVALID_DEPTH = "Invalid max depth value";
-	private static final String EMPTY_REGEX_MESSAGE = "The regular expression is not specified";
-	private static final String EMPTY_PATH_MESSAGE = "The starting path is not specified";
-	
 	private final RegexpResearchData model;
-	private final RegexpView view;
+	private final RegexpBindingView view;
 	private final ExecutorService executor;
 
 	/**
 	 * Creates a new Controller.
 	 * 
-	 * @param model
-	 * 		the application model
 	 * @param view
 	 * 		the application view
 	 */
-	public RegexpControllerImpl(final RegexpResearchData model, final RegexpView view) {
+	public RegexpControllerImpl(final RegexpResearchData model, final RegexpBindingView view) {
 		Objects.requireNonNull(model);
 		Objects.requireNonNull(view);
 		this.model = model;
@@ -47,7 +40,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setStartingPath(path);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError(INVALID_PATH);
+			this.view.showInputError("Invalid path");
 		}
 	}
 
@@ -56,7 +49,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setPattern(regex);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError(INVALID_REGEX);
+			this.view.showInputError("Invalid regular expression syntax");
 		}
 	}
 
@@ -65,7 +58,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setMaxDepthNavigation(maxDepth);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError(INVALID_DEPTH);
+			this.view.showInputError("Invalid max depth value");
 		}
 	}
 
@@ -77,10 +70,10 @@ public class RegexpControllerImpl implements RegexpController {
 						this.model.getMaxDepth(), this.executor, this.view).start();
 				return true;
 			} else {
-				this.view.showInputError(EMPTY_REGEX_MESSAGE);
+				this.view.showInputError("The regular expression is not specified");
 			}
 		} else {
-			this.view.showInputError(EMPTY_PATH_MESSAGE);
+			this.view.showInputError("The starting path is not specified");
 		}
 		return false;
 	}

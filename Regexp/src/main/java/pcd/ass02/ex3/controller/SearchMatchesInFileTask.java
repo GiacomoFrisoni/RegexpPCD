@@ -1,14 +1,13 @@
-package pcd.ass02.ex1.controller;
+package pcd.ass02.ex3.controller;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import pcd.ass02.ex1.controller.Chrono;
 import pcd.ass02.ex1.model.Document;
 import pcd.ass02.ex1.model.SearchFileErrorResult;
 import pcd.ass02.ex1.model.SearchFileResult;
@@ -19,36 +18,31 @@ import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
  * in a specified file.
  *
  */
-public class SearchMatchesInFileTask implements Callable<Void> {
+public class SearchMatchesInFileTask implements Callable<SearchFileResult> {
 
 	private final static long MAX_FILE_SIZE = 262144000;
 	private final static String FILE_TOO_LARGE_MESSAGE = "Too large to analyze";
 	
 	private final Path filePath;
 	private final Pattern pattern;
-	private final BlockingQueue<Optional<SearchFileResult>> queue;
 	
 	/**
-	 * Constructs a new file matcher research task.
+	 * Constructs a new file matches research task.
 	 * 
 	 * @param filePath
 	 * 		the file path to use as research input
 	 * @param pattern
 	 * 		the regex pattern
-	 * @param queue
-	 * 		the producer / consumer queue
 	 */
-	public SearchMatchesInFileTask(final Path filePath, final Pattern pattern, final BlockingQueue<Optional<SearchFileResult>> queue) {
+	public SearchMatchesInFileTask(final Path filePath, final Pattern pattern) {
 		Objects.requireNonNull(filePath);
 		Objects.requireNonNull(pattern);
-		Objects.requireNonNull(queue);
 		this.filePath = filePath;
 		this.pattern = pattern;
-		this.queue = queue;
 	}
 	
 	@Override
-	public Void call() {
+	public SearchFileResult call() {
 		try {
 			if (this.filePath.toFile().length() < MAX_FILE_SIZE) {
 				final Chrono cron = new Chrono();
@@ -59,14 +53,13 @@ public class SearchMatchesInFileTask implements Callable<Void> {
 		        while (matcher.find())
 		        	nMatches++;
 				cron.stop();
-				this.queue.add(Optional.of(new SearchFileSuccessfulResult(this.filePath, nMatches, cron.getTime())));
+				return new SearchFileSuccessfulResult(this.filePath, nMatches, cron.getTime());
 			} else {
-				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, FILE_TOO_LARGE_MESSAGE)));
+				return new SearchFileErrorResult(this.filePath, FILE_TOO_LARGE_MESSAGE);
 			}
 		} catch (final IOException e) {
-			this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, e.getLocalizedMessage())));
-		} 
-		return null;
+			return new SearchFileErrorResult(this.filePath, e.getLocalizedMessage());
+		}
 	}
 
 }

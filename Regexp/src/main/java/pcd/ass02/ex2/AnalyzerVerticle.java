@@ -25,8 +25,9 @@ import pcd.ass02.ex1.view.RegexpView;
  */
 public class AnalyzerVerticle extends AbstractVerticle {
 
-	private final static long MAX_FILE_SIZE = 262144000;
-	private final static String FILE_TOO_LARGE_MESSAGE = "Too large to analyze";
+	private static final long MAX_FILE_SIZE = 262144000;
+	
+	private static final String FILE_TOO_LARGE_MESSAGE = "Too large to analyze";
 	private static final String FILE_NOT_EXISTS_MESSAGE = "The file does not exists";
 	private static final String ANALYSIS_EXCEPTION_MESSAGE = "Un exception has occurred during the analysis of the subtree";
 	
@@ -56,7 +57,8 @@ public class AnalyzerVerticle extends AbstractVerticle {
 
 	@Override
 	public void start(final Future<Void> done) throws Exception {
-		searchPattern(this.startingPath.toString(), this.maxDepth, handler -> {
+		// Searches the files to analyze from the starting path
+		searchFiles(this.startingPath.toString(), this.maxDepth, handler -> {
 			if (handler.failed()) {
 				this.view.setFinish();
 				this.view.showException(ExceptionType.IO_EXCEPTION,
@@ -66,12 +68,13 @@ public class AnalyzerVerticle extends AbstractVerticle {
 				this.vertx.eventBus().send("totalFiles", this.nVisitedFiles);
 			}
 		});
+		// Destroys itself when the end message is received
 		vertx.eventBus().consumer("end", message -> {
 			vertx.undeploy(this.deploymentID());
 		});
 	}
 
-	private void searchPattern(final String path, final int depth, final Handler<AsyncResult<Void>> handler) {
+	private void searchFiles(final String path, final int depth, final Handler<AsyncResult<Void>> handler) {
 		analyzeFile(path, depth).setHandler(handler);
 	}
 	
@@ -103,7 +106,7 @@ public class AnalyzerVerticle extends AbstractVerticle {
 				}
 			});
 			fProps.setHandler((AsyncResult<FileProps> propsHandler) -> {
-				// If the access to the file properties fails, the subtree is skipped.
+				// If the access to the file properties fails, the subtree is skipped
 				if (propsHandler.succeeded()) {
 					final FileProps props = propsHandler.result();
 					// If the file is a directory, reads it
@@ -114,7 +117,7 @@ public class AnalyzerVerticle extends AbstractVerticle {
 						if (props.size() < MAX_FILE_SIZE) {
 							/*
 							 * If the file is not a directory, updates the number of discovered
-							 * files, sends a message and set the future as successful completed.
+							 * files, sends a message and sets the future as successful completed.
 							 */
 							this.view.setTotalFilesToScan(++this.nVisitedFiles);
 							vertx.eventBus().send("fileToAnalyze", path);
@@ -142,13 +145,13 @@ public class AnalyzerVerticle extends AbstractVerticle {
 					for (final String pathFile : pathFiles) {
 						futures.add(analyzeFile(pathFile, depth - 1));
 					}
-					// Sets events for the completion of all children
+					// Sets events for the completion of all directory children
 					CompositeFuture.all(futures).setHandler((AsyncResult<CompositeFuture> res) -> {
 						if (res.failed()) {
-							// At least one file children failed
+							// At least one children analysis failed
 							future.fail(res.cause());
 						} else {
-							// All files children succeeded
+							// All children analysis succeeded
 							future.complete();
 						}
 					});

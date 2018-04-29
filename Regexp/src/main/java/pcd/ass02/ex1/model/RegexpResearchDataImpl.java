@@ -8,12 +8,19 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+/**
+ * Implementation of {@link RegexpResearchData}.
+ *
+ */
 public class RegexpResearchDataImpl implements RegexpResearchData {
 	
 	private Optional<Path> startingPath;
 	private Optional<Pattern> pattern;
 	private int maxDepth;
 	
+	/**
+	 * Constructs a new data model.
+	 */
 	public RegexpResearchDataImpl() {
 		this.startingPath = Optional.empty();
 		this.pattern = Optional.empty();

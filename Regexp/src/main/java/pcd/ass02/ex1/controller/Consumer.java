@@ -19,6 +19,7 @@ import pcd.ass02.ex1.view.RegexpView;
 public class Consumer extends Thread {
 	
 	public static final Optional<SearchFileResult> POISON_PILL = Optional.empty();
+	private static final String INTERRUPTION_MESSAGE = "Someone interrupted the consumer when was waiting for something";
 	
 	private final BlockingQueue<Optional<SearchFileResult>> queue;
 	private final RegexpView view;
@@ -85,7 +86,7 @@ public class Consumer extends Thread {
 					}	
 				}
 			} catch (final InterruptedException ie) {
-				this.view.showException(ExceptionType.THREAD_EXCEPTION, "Someone interrupted the consumer when was waiting for something", ie);
+				this.view.showException(ExceptionType.THREAD_EXCEPTION, INTERRUPTION_MESSAGE, ie);
 			}
 		}
 		this.view.setFinish();
