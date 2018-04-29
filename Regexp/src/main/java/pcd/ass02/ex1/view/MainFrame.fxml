@@ -108,6 +108,11 @@
 			<ProgressBar fx:id="progressBar" maxWidth="$maxValue"></ProgressBar>	
 			<TableView VBox.vgrow="ALWAYS" fx:id="tableView" editable="false"></TableView>
 		</VBox>
+		
+		<HBox spacing="5">
+			<Label text="Total elapsed time (s):"></Label>
+			<Label fx:id="totalElapsedTime" text="$defaultValue"></Label>
+		</HBox>
 	</VBox>
 	
 </fx:root>

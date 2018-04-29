@@ -55,7 +55,7 @@ public class MainBindingFrame extends GridPane {
 	
 	@FXML private TextField path, regularExpression, depth;
 	@FXML private Button choosePath, start, reset;
-	@FXML private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan;
+	@FXML private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan, totalElapsedTime;
 	@FXML private CheckBox maxDepth;
 	@FXML private ProgressIndicator progress;
 	@FXML private ProgressBar progressBar;
@@ -100,6 +100,7 @@ public class MainBindingFrame extends GridPane {
         this.currentScanned.textProperty().bind(ViewDataManager.getHandler().numberOfComputedFilesProperty().asString());
         this.leastOneMatchPercentage.textProperty().bind(ViewDataManager.getHandler().leastOneMatchPercentageProperty().multiply(100.0).asString(DOUBLE_FORMAT));
         this.meanNumberOfMatches.textProperty().bind(ViewDataManager.getHandler().meanNumberOfMatchesProperty().asString(DOUBLE_FORMAT));
+        this.totalElapsedTime.textProperty().bind(ViewDataManager.getHandler().getTotalElapsedTimeProperty().asString());
 	}
 	
 	private void setDimensions() {

@@ -55,13 +55,14 @@ public class MainFrame extends GridPane {
 	private final Stage window;
 	private final DecimalFormat decimalFormat;
 	private double totalFilesToScan = 0.0;
+	private int totElapsedTime = 0;
 	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 	
 	@FXML private Integer defaultValue;
 	
 	@FXML private TextField path, regularExpression, depth;
 	@FXML private Button choosePath, start, reset;
-	@FXML private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan;
+	@FXML private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan, totalElapsedTime;
 	@FXML private CheckBox maxDepth;
 	@FXML private ProgressIndicator progress;
 	@FXML private ProgressBar progressBar;
@@ -217,6 +218,7 @@ public class MainFrame extends GridPane {
 			this.currentScanned.setText("" + defaultValue);
 			this.totalToScan.setText("" + defaultValue);
 			this.progressBar.setProgress(defaultValue);
+			this.totalElapsedTime.setText("" + defaultValue);
 		
 			this.choosePath.setDisable(false);
 			this.path.setDisable(false);
@@ -303,6 +305,8 @@ public class MainFrame extends GridPane {
 	public void addResult(final String path, final int nMatches, final long time) {	
 		Platform.runLater(() -> {
 			resultRows.add(new RowType(path, "" + nMatches, time));
+			this.totElapsedTime += time;
+			this.totalElapsedTime.setText("" + this.totElapsedTime);
 		});
 	}
 	
