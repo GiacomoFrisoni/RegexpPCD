@@ -6,8 +6,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
@@ -53,31 +51,16 @@ public class MainBindingFrame extends GridPane {
 	
 	private final RegexpController controller;
 	private final Stage window;
-	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 	
-	@FXML
-	private Integer defaultValue;
+	@FXML private Integer defaultValue;
 	
-	@FXML
-	private TextField path, regularExpression, depth;
-	
-	@FXML
-	private Button choosePath, start, reset;
-	
-	@FXML
-	private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan;
-	
-	@FXML
-	private CheckBox maxDepth;
-	
-	@FXML
-	private ProgressIndicator progress;
-	
-	@FXML
-	private ProgressBar progressBar;
-	
-	@FXML
-	private TableView<RowType> tableView;
+	@FXML private TextField path, regularExpression, depth;
+	@FXML private Button choosePath, start, reset;
+	@FXML private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan;
+	@FXML private CheckBox maxDepth;
+	@FXML private ProgressIndicator progress;
+	@FXML private ProgressBar progressBar;
+	@FXML private TableView<RowType> tableView;
 	
 	
 	/**
@@ -100,15 +83,18 @@ public class MainBindingFrame extends GridPane {
 		
         try {
             fxmlLoader.load();
-            this.getStylesheets().add(getClass().getResource("..\\..\\ex1\\view\\style.css").toExternalForm());
-            this.setDimensions();
-            this.setEventHandlers();
-            this.setTableColumns();
-            this.setIdle();
+
         } catch (Exception exception) {
         	MessageUtils.showFXMLException(this.toString(), exception);
         	exception.printStackTrace();
         }
+        
+        //Set view
+        this.getStylesheets().add(getClass().getResource("..\\..\\ex1\\view\\style.css").toExternalForm());
+        this.setDimensions();
+        this.setEventHandlers();
+        this.setTableColumns();
+        this.setIdle();
         
         //Set bindings
         this.totalToScan.textProperty().bind(DataManager.getHandler().numberOfVisitedFilesProperty().asString());
@@ -234,44 +220,10 @@ public class MainBindingFrame extends GridPane {
 			this.start.setDisable(false);
 			this.maxDepth.setDisable(false);
 			this.reset.setDisable(true);
-			this.resultRows.clear();
 			this.tableView.getItems().clear();
 		});
 	}
 	
-	/**
-	 * Adds a row into the result table.
-	 * 
-	 * @param path
-	 * 		the path of the scanned file
-	 * @param nMatches
-	 * 		the number of matches in the file
-	 * @param time
-	 * 		time elapsed to evaluate that file
-	 */
-	public void addResult(final String path, final int nMatches, final long time) {	
-		Platform.runLater(() -> {
-			resultRows.add(new RowType(path, "" + nMatches, time));
-			//tableView.scrollTo(this.resultRows.size() - 1);
-			//System.out.println(path);
-		});
-	}
-	
-	/**
-	 * Adds a row into the result table.
-	 * 
-	 * @param path
-	 * 		the path of the scanned file
-	 * @param message
-	 * 		the message to display
-	 */
-	public void addResult(final String path, final String message) {
-		Platform.runLater(() -> {
-			resultRows.add(new RowType(path, message, 0));
-			//tableView.scrollTo(this.resultRows.size() - 1);
-			//System.out.println(path + "["+ message +"]");
-		});
-	}
 
 	/**
 	 * Change the status of the window according to passed parameters
@@ -393,7 +345,7 @@ public class MainBindingFrame extends GridPane {
 		this.tableView.getColumns().add(tcTime);
 		
 		//Bind to observable collection
-		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(resultRows));
+		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(DataManager.getHandler().getResultList()));
 	}
 	
 	

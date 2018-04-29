@@ -138,11 +138,11 @@ public class Master {
 					DataManager.getHandler().setMeanNumberOfMatches(this.meanNumberOfMatches);
 				}
 				// Shows file result on view
-				// this.view.showResult(successfulRes.getPath().toString(), nMatches, successfulRes.getElapsedTime());
+				DataManager.getHandler().addResult(successfulRes.getPath().toString(), nMatches, successfulRes.getElapsedTime());
 			} else if (result instanceof SearchFileErrorResult) {
 				final SearchFileErrorResult errorRes = (SearchFileErrorResult)result;
 				// Shows file result on view
-				this.view.showResult(errorRes.getPath().toString(), errorRes.getErrorMessage());
+				DataManager.getHandler().addResult(errorRes.getPath().toString(), errorRes.getErrorMessage());
 			}
 			// Shows statistics on view
 			DataManager.getHandler().setLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)this.nComputedFiles);

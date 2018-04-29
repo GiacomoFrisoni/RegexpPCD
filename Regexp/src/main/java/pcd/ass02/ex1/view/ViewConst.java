@@ -4,7 +4,8 @@ public enum ViewConst {
 
 	GENERAL_TITLE("Giacomo Frisoni & Marcin Pabich"),
 	EXECUTOR_TITLE(GENERAL_TITLE.getTitle() + " - Executors"),
-	VERTX_TITLE(GENERAL_TITLE.getTitle() + " - Vert.x");
+	VERTX_TITLE(GENERAL_TITLE.getTitle() + " - Vert.x"),
+	RX_TITLE(GENERAL_TITLE.getTitle() + " - Executors + RxJava");
 	
 	private final String title;
 	

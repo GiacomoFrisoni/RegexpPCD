@@ -5,6 +5,9 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import pcd.ass02.ex1.view.RowType;
 
 public class DataManager {
 
@@ -14,6 +17,7 @@ public class DataManager {
 	private SimpleIntegerProperty nComputedFiles = new SimpleIntegerProperty();
 	private SimpleDoubleProperty leastOneMatchPercentage = new SimpleDoubleProperty();
 	private SimpleDoubleProperty meanNumberOfMatches = new SimpleDoubleProperty();
+	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 
 	
     private DataManager() {
@@ -84,6 +88,20 @@ public class DataManager {
 
 	public DoubleProperty leastOneMatchPercentageProperty() {
 		return this.leastOneMatchPercentage;
+	}
+	
+	//List of data
+	
+	public void addResult(final String path, final int nMatches, final long time) {
+		this.resultRows.add(new RowType(path, "" + nMatches, time));
+	}
+	
+	public void addResult(final String path, final String message) {
+		this.resultRows.add(new RowType(path, message, 0));
+	}
+	
+	public ObservableList<RowType> getResultList() {
+		return FXCollections.unmodifiableObservableList(this.resultRows);
 	}
 	
 }

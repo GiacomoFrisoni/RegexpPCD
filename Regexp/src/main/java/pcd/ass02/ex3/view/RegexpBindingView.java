@@ -19,28 +19,6 @@ public interface RegexpBindingView {
 	void show();
 	
 	/**
-	 * Shows a file pattern research result.
-	 * 
-	 * @param path
-	 * 		path to the scanned file
-	 * @param nMatches
-	 * 		number of matches in the file
-	 * @param time
-	 * 		time elapsed to parse the file
-	 */
-	void showResult(String path, int nMatches, long time);
-	
-	/**
-	 * Shows a file pattern research result.
-	 * 
-	 * @param path
-	 * 		path to the scanned file
-	 * @param error
-	 * 		error occurred during the scanning process
-	 */
-	void showResult(String path, String error);
-	
-	/**
 	 * When computation is done, set the view to finished state
 	 */
 	void setFinish();

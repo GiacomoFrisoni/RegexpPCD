@@ -51,16 +51,6 @@ public class RegexpBindingViewImpl implements RegexpBindingView {
 				new Image(("file:res/icon64x64.png")));
 		this.stage.show();	
 	}
-
-	@Override
-	public void showResult(final String path, final int matches, final long time) {
-		this.mainFrame.addResult(path, matches, time);
-	}
-
-	@Override
-	public void showResult(final String path, final String error) {
-		this.mainFrame.addResult(path, error);
-	}
 	
 	@Override
 	public void setFinish() {

@@ -2,7 +2,6 @@ package pcd.ass02.ex1.view;
 
 import java.io.File;
 import java.text.DecimalFormat;
-import java.util.Comparator;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -104,14 +103,17 @@ public class MainFrame extends GridPane {
 		
         try {
             fxmlLoader.load();
-            this.setDimensions();
-            this.setEventHandlers();
-            this.setTableColumns();
-            this.setIdle();
         } catch (Exception exception) {
         	MessageUtils.showFXMLException(this.toString(), exception);
         	exception.printStackTrace();
         }
+        
+        //Set view
+        this.getStylesheets().add(getClass().getResource("..\\..\\ex1\\view\\style.css").toExternalForm());
+        this.setDimensions();
+        this.setEventHandlers();
+        this.setTableColumns();
+        this.setIdle();
 	}
 	
 	private void setDimensions() {
@@ -309,8 +311,6 @@ public class MainFrame extends GridPane {
 	public void addResult(final String path, final int nMatches, final long time) {	
 		Platform.runLater(() -> {
 			resultRows.add(new RowType(path, "" + nMatches, time));
-			//tableView.scrollTo(this.resultRows.size() - 1);
-			//System.out.println(path);
 		});
 	}
 	
@@ -325,8 +325,6 @@ public class MainFrame extends GridPane {
 	public void addResult(final String path, final String message) {
 		Platform.runLater(() -> {
 			resultRows.add(new RowType(path, message, 0));
-			//tableView.scrollTo(this.resultRows.size() - 1);
-			//System.out.println(path + "["+ message +"]");
 		});
 	}
 

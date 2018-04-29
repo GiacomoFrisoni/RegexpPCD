@@ -42,7 +42,7 @@ public class MessageUtils {
 	 * @param additional
 	 * 		additional info of the dialog, under the main message
 	 * @param action
-	 * 		action performered on button pressed
+	 * 		action performed on button pressed
 	 */
 	public static void showMessage(final AlertType type, final String title, final String header, final String message, final String additional, Consumer<ButtonType> action) {
 		Platform.runLater(() ->{

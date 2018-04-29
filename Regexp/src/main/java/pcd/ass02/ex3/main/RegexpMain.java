@@ -18,7 +18,7 @@ public class RegexpMain extends Application {
 	@Override
 	public void start(final Stage primaryStage) {
 		final RegexpResearchData model = new RegexpResearchDataImpl();
-		final RegexpBindingView view = new RegexpBindingViewImpl(primaryStage, ViewConst.EXECUTOR_TITLE.getTitle());
+		final RegexpBindingView view = new RegexpBindingViewImpl(primaryStage, ViewConst.RX_TITLE.getTitle());
 		final RegexpController controller = new RegexpControllerImpl(model, view);
 		view.setController(controller);
 		view.show();

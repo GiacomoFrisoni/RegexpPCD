@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.ColumnConstraints?>
 
-<fx:root xmlns:fx="http://javafx.com/fxml/1" type="GridPane" stylesheets="@style.css" vgap="$margin">
+<fx:root xmlns:fx="http://javafx.com/fxml/1" type="GridPane" vgap="$margin">
 	<fx:define>
 		<Double fx:id="marginSmall" fx:value="5" />
 		<Double fx:id="margin" fx:value="15" />
