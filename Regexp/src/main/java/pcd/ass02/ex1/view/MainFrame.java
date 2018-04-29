@@ -57,29 +57,15 @@ public class MainFrame extends GridPane {
 	private double totalFilesToScan = 0.0;
 	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 	
-	@FXML
-	private Integer defaultValue;
+	@FXML private Integer defaultValue;
 	
-	@FXML
-	private TextField path, regularExpression, depth;
-	
-	@FXML
-	private Button choosePath, start, reset;
-	
-	@FXML
-	private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan;
-	
-	@FXML
-	private CheckBox maxDepth;
-	
-	@FXML
-	private ProgressIndicator progress;
-	
-	@FXML
-	private ProgressBar progressBar;
-	
-	@FXML
-	private TableView<RowType> tableView;
+	@FXML private TextField path, regularExpression, depth;
+	@FXML private Button choosePath, start, reset;
+	@FXML private Label statusLabel, leastOneMatchPercentage, meanNumberOfMatches, currentScanned, totalToScan;
+	@FXML private CheckBox maxDepth;
+	@FXML private ProgressIndicator progress;
+	@FXML private ProgressBar progressBar;
+	@FXML private TableView<RowType> tableView;
 	
 	
 	/**
@@ -116,6 +102,9 @@ public class MainFrame extends GridPane {
         this.setIdle();
 	}
 	
+	/**
+	 * Set the dimensions of the control, setting it at the minimum width/height required
+	 */
 	private void setDimensions() {
 		this.setWidth(WIDTH);
     	this.setHeight(HEIGHT);
@@ -125,6 +114,9 @@ public class MainFrame extends GridPane {
     	this.window.setMinHeight(HEIGHT);
 	}
 	
+	/**
+	 * Sets all the event handlers for the view
+	 */
 	private void setEventHandlers() {
 		//Choosing the right path
         this.choosePath.setOnMouseClicked(e -> {
@@ -186,7 +178,7 @@ public class MainFrame extends GridPane {
 	}
 	
 	/**
-	 * Sets the view to the searching.
+	 * Sets the view to the searching state.
 	 */
 	public void setSearching() {
 		this.changeStatus(SEARCHING_MESSAGE, true, false);
