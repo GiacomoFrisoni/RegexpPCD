@@ -13,7 +13,8 @@ public class MessageUtils {
 		
 		FXML_EXCEPTION("FXML Loading Exception"),
 		THREAD_EXCEPTION("Thread Exception"),
-		IO_EXCEPTION("IO Exception");
+		IO_EXCEPTION("IO Exception"),
+		STREAM_EXCEPTION("Stream Exception");
 		
 		private final String header;
 		

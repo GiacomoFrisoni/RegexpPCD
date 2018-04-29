@@ -3,9 +3,13 @@ package pcd.ass02.ex3.controller;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
 
+import pcd.ass02.ex1.model.SearchFileResult;
 import pcd.ass02.ex3.view.RegexpBindingView;
 
 /**
@@ -19,6 +23,7 @@ public class SearchMatchesService extends Thread {
 	private final int maxDepth;
 	private final ExecutorService executor;
 	private final RegexpBindingView view;
+	private final BlockingQueue<Optional<SearchFileResult>> queue;
 	
 	/**
 	 * Constructs a new matches research service.
@@ -51,12 +56,13 @@ public class SearchMatchesService extends Thread {
 		this.maxDepth = maxDepth;
 		this.executor = executor;
 		this.view = view;
+		this.queue = new LinkedBlockingQueue<>();
 	}
 	
 	@Override
 	public void run() {
 		// Starts master computation
-		new Master(this.startingPath, this.pattern, this.maxDepth, this.executor, this.view).compute();
+		new Master(this.startingPath, this.pattern, this.maxDepth, this.executor, this.queue, this.view).compute();
 	}
 
 }
