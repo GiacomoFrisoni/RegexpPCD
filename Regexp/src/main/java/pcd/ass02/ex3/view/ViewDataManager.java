@@ -1,4 +1,4 @@
-package pcd.ass02.ex3.controller;
+package pcd.ass02.ex3.view;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -9,18 +9,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import pcd.ass02.ex1.view.RowType;
 
-public class DataManager {
+public class ViewDataManager {
 
-	private static volatile DataManager singleton;
+	private static volatile ViewDataManager singleton;
 	
-	private SimpleIntegerProperty nVisitedFiles = new SimpleIntegerProperty();
-	private SimpleIntegerProperty nComputedFiles = new SimpleIntegerProperty();
-	private SimpleDoubleProperty leastOneMatchPercentage = new SimpleDoubleProperty();
-	private SimpleDoubleProperty meanNumberOfMatches = new SimpleDoubleProperty();
+	private final SimpleIntegerProperty nVisitedFiles = new SimpleIntegerProperty();
+	private final SimpleIntegerProperty nComputedFiles = new SimpleIntegerProperty();
+	private final SimpleDoubleProperty leastOneMatchPercentage = new SimpleDoubleProperty();
+	private final SimpleDoubleProperty meanNumberOfMatches = new SimpleDoubleProperty();
+	
 	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 
 	
-    private DataManager() {
+    private ViewDataManager() {
 		this.nVisitedFiles.set(0);
 		this.nComputedFiles.set(0);
 		this.leastOneMatchPercentage.set(0.0);
@@ -35,11 +36,11 @@ public class DataManager {
      * 
      * @return the data manager.
      */
-    public static DataManager getHandler() {
+    public static ViewDataManager getHandler() {
         if (singleton == null) {
-            synchronized (DataManager.class) {
+            synchronized (ViewDataManager.class) {
                 if (singleton == null) {
-                    singleton = new DataManager();
+                    singleton = new ViewDataManager();
                 }
             }
         }
@@ -90,7 +91,7 @@ public class DataManager {
 		return this.leastOneMatchPercentage;
 	}
 	
-	//List of data
+	// List of data
 	
 	public void addResult(final String path, final int nMatches, final long time) {
 		this.resultRows.add(new RowType(path, "" + nMatches, time));
@@ -101,7 +102,7 @@ public class DataManager {
 	}
 	
 	public ObservableList<RowType> getResultList() {
-		return FXCollections.unmodifiableObservableList(this.resultRows);
+		return this.resultRows;
 	}
 	
 }

@@ -22,6 +22,7 @@ import pcd.ass02.ex1.model.SearchFileResult;
 import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
 import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
 import pcd.ass02.ex3.view.RegexpBindingView;
+import pcd.ass02.ex3.view.ViewDataManager;
 
 /**
  * This class models the Regex Master.
@@ -101,7 +102,7 @@ public class Master {
 		
 		pathSource.subscribe((path) -> {
 			results.add(this.executor.submit(new SearchMatchesInFileTask(path, this.pattern)));
-			DataManager.getHandler().setNumberOfVisitedFiles(++this.nVisitedFiles);
+			ViewDataManager.getHandler().setNumberOfVisitedFiles(++this.nVisitedFiles);
 		});
 		
 		/*
@@ -124,7 +125,7 @@ public class Master {
 		
 		// Defines a search results observer
 		resultSource.subscribe((result) -> {
-			DataManager.getHandler().setNumberOfComputedFiles(++this.nComputedFiles);
+			ViewDataManager.getHandler().setNumberOfComputedFiles(++this.nComputedFiles);
 			// Checks the type of the result
 			if (result instanceof SearchFileSuccessfulResult) {
 				final SearchFileSuccessfulResult successfulRes = (SearchFileSuccessfulResult)result;
@@ -135,18 +136,17 @@ public class Master {
 					// Updates the mean number of matches among files with matches
 					final double oldMean = this.meanNumberOfMatches;
 					this.meanNumberOfMatches += (nMatches - oldMean) / this.nLeastOneMatch;
-					DataManager.getHandler().setMeanNumberOfMatches(this.meanNumberOfMatches);
+					ViewDataManager.getHandler().setMeanNumberOfMatches(this.meanNumberOfMatches);
 				}
 				// Shows file result on view
-				DataManager.getHandler().addResult(successfulRes.getPath().toString(), nMatches, successfulRes.getElapsedTime());
+				ViewDataManager.getHandler().addResult(successfulRes.getPath().toString(), nMatches, successfulRes.getElapsedTime());
 			} else if (result instanceof SearchFileErrorResult) {
 				final SearchFileErrorResult errorRes = (SearchFileErrorResult)result;
 				// Shows file result on view
-				DataManager.getHandler().addResult(errorRes.getPath().toString(), errorRes.getErrorMessage());
+				ViewDataManager.getHandler().addResult(errorRes.getPath().toString(), errorRes.getErrorMessage());
 			}
 			// Shows statistics on view
-			DataManager.getHandler().setLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)this.nComputedFiles);
-			// this.view.showLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)this.nComputedFiles);
+			ViewDataManager.getHandler().setLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)this.nComputedFiles);
 		});
 	}
 	

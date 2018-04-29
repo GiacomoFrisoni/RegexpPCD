@@ -23,7 +23,6 @@ import javafx.stage.Stage;
 import pcd.ass02.ex1.controller.RegexpController;
 import pcd.ass02.ex1.view.MessageUtils;
 import pcd.ass02.ex1.view.RowType;
-import pcd.ass02.ex3.controller.DataManager;
 
 public class MainBindingFrame extends GridPane {
 	
@@ -97,10 +96,10 @@ public class MainBindingFrame extends GridPane {
         this.setIdle();
         
         //Set bindings
-        this.totalToScan.textProperty().bind(DataManager.getHandler().numberOfVisitedFilesProperty().asString());
-        this.currentScanned.textProperty().bind(DataManager.getHandler().numberOfComputedFilesProperty().asString());
-        this.leastOneMatchPercentage.textProperty().bind(DataManager.getHandler().leastOneMatchPercentageProperty().asString(DOUBLE_FORMAT));
-        this.meanNumberOfMatches.textProperty().bind(DataManager.getHandler().meanNumberOfMatchesProperty().asString(DOUBLE_FORMAT));
+        this.totalToScan.textProperty().bind(ViewDataManager.getHandler().numberOfVisitedFilesProperty().asString());
+        this.currentScanned.textProperty().bind(ViewDataManager.getHandler().numberOfComputedFilesProperty().asString());
+        this.leastOneMatchPercentage.textProperty().bind(ViewDataManager.getHandler().leastOneMatchPercentageProperty().asString(DOUBLE_FORMAT));
+        this.meanNumberOfMatches.textProperty().bind(ViewDataManager.getHandler().meanNumberOfMatchesProperty().asString(DOUBLE_FORMAT));
 	}
 	
 	private void setDimensions() {
@@ -345,7 +344,7 @@ public class MainBindingFrame extends GridPane {
 		this.tableView.getColumns().add(tcTime);
 		
 		//Bind to observable collection
-		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(DataManager.getHandler().getResultList()));
+		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(ViewDataManager.getHandler().getResultList()));
 	}
 	
 	
