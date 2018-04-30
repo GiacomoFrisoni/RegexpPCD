@@ -13,8 +13,8 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.file.FileProps;
 import io.vertx.core.file.FileSystem;
-import pcd.ass02.ex1.model.SearchFileErrorResult;
-import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
+import pcd.ass02.common.model.SearchFileErrorResult;
+import pcd.ass02.common.view.MessageUtils.ExceptionType;
 import pcd.ass02.ex1.view.RegexpView;
 
 /**
@@ -68,6 +68,7 @@ public class AnalyzerVerticle extends AbstractVerticle {
 				this.vertx.eventBus().send("totalFiles", this.nVisitedFiles);
 			}
 		});
+		
 		// Destroys itself when the end message is received
 		vertx.eventBus().consumer("end", message -> {
 			vertx.undeploy(this.deploymentID());

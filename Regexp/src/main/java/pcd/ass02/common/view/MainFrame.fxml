@@ -110,7 +110,7 @@
 		</VBox>
 		
 		<HBox spacing="5">
-			<Label text="Total elapsed time (s):"></Label>
+			<Label text="Total elapsed time (ms):"></Label>
 			<Label fx:id="totalElapsedTime" text="$defaultValue"></Label>
 		</HBox>
 	</VBox>

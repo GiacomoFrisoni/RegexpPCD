@@ -23,8 +23,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import pcd.ass02.ex1.controller.RegexpController;
+import pcd.ass02.common.controller.RegexpController;
+import pcd.ass02.common.view.MessageUtils;
+import pcd.ass02.common.view.RowType;
 
+/**
+ * This class handles the view scene, using a grid pane layout.
+ *
+ */
 public class MainFrame extends GridPane {
 	
 	private static final int WIDTH = 800;
@@ -55,7 +61,6 @@ public class MainFrame extends GridPane {
 	private final Stage window;
 	private final DecimalFormat decimalFormat;
 	private double totalFilesToScan = 0.0;
-	private int totElapsedTime = 0;
 	private final ObservableList<RowType> resultRows = FXCollections.observableArrayList();
 	
 	@FXML private Integer defaultValue;
@@ -84,7 +89,7 @@ public class MainFrame extends GridPane {
 		this.decimalFormat = new DecimalFormat(DECIMAL_FORMAT_PATTERN);
 		
     	//Load the FXML definition
-		final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MainFrame.fxml"));
+		final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("..\\..\\common\\view\\MainFrame.fxml"));
 		fxmlLoader.setRoot(this);
 		fxmlLoader.setController(this);
 		
@@ -96,15 +101,15 @@ public class MainFrame extends GridPane {
         }
         
         //Set view
-        this.getStylesheets().add(getClass().getResource("..\\..\\ex1\\view\\style.css").toExternalForm());
+        this.getStylesheets().add(getClass().getResource("..\\..\\common\\view\\style.css").toExternalForm());
         this.setDimensions();
         this.setEventHandlers();
         this.setTableColumns();
         this.setIdle();
 	}
 	
-	/**
-	 * Set the dimensions of the control, setting it at the minimum width/height required
+	/*
+	 * Sets the dimensions of the control, setting it at the minimum width/height required.
 	 */
 	private void setDimensions() {
 		this.setWidth(WIDTH);
@@ -115,8 +120,8 @@ public class MainFrame extends GridPane {
     	this.window.setMinHeight(HEIGHT);
 	}
 	
-	/**
-	 * Sets all the event handlers for the view
+	/*
+	 * Sets all the event handlers for the view.
 	 */
 	private void setEventHandlers() {
 		//Choosing the right path
@@ -196,43 +201,12 @@ public class MainFrame extends GridPane {
 	}
 	
 	/**
-	 * Sets the view as done when computation finished
+	 * Sets the view as done when computation finished.
 	 */
 	public void setFinish() {
 		this.changeStatus(FINISH_MESSAGE, false, false);
 		Platform.runLater(() -> this.reset.setDisable(false));
 	}
-	
-	/**
-	 * Reset all the view
-	 */
-	public void reset() {
-		this.changeStatus(IDLE_MESSAGE, false, false);
-		Platform.runLater(() -> {		
-			this.path.clear();
-			this.regularExpression.clear();
-			this.depth.setText("1");
-			this.maxDepth.setSelected(false);
-			this.leastOneMatchPercentage.setText(defaultValue + PERCENTAGE_SYMBOL);
-			this.meanNumberOfMatches.setText("" + defaultValue);
-			this.currentScanned.setText("" + defaultValue);
-			this.totalToScan.setText("" + defaultValue);
-			this.progressBar.setProgress(defaultValue);
-			this.totalElapsedTime.setText("" + defaultValue);
-		
-			this.choosePath.setDisable(false);
-			this.path.setDisable(false);
-			this.regularExpression.setDisable(false);
-			this.depth.setDisable(false);
-			this.start.setDisable(false);
-			this.maxDepth.setDisable(false);
-			this.reset.setDisable(true);
-			this.resultRows.clear();
-			this.tableView.getItems().clear();
-		});
-	}
-	
-	
 	
 	/**
 	 * Sets the label to show percentage of files with least one match.
@@ -305,8 +279,6 @@ public class MainFrame extends GridPane {
 	public void addResult(final String path, final int nMatches, final long time) {	
 		Platform.runLater(() -> {
 			resultRows.add(new RowType(path, "" + nMatches, time));
-			this.totElapsedTime += time;
-			this.totalElapsedTime.setText("" + this.totElapsedTime);
 		});
 	}
 	
@@ -323,9 +295,51 @@ public class MainFrame extends GridPane {
 			resultRows.add(new RowType(path, message, 0));
 		});
 	}
-
+	
 	/**
-	 * Change the status of the window according to passed parameters
+	 * Displays the total elapsed time for the search service.
+	 * 
+	 * @param time
+	 * 		the total time to display (in milliseconds)
+	 */
+	public void showTotalElapsedTime(final long time) {
+		Platform.runLater(() -> {
+			this.totalElapsedTime.setText("" + time);
+		});
+	}
+	
+	/**
+	 * Resets all the view.
+	 */
+	public void reset() {
+		this.changeStatus(IDLE_MESSAGE, false, false);
+		Platform.runLater(() -> {		
+			this.path.clear();
+			this.regularExpression.clear();
+			this.depth.setText("1");
+			this.maxDepth.setSelected(false);
+			this.leastOneMatchPercentage.setText(defaultValue + PERCENTAGE_SYMBOL);
+			this.meanNumberOfMatches.setText("" + defaultValue);
+			this.currentScanned.setText("" + defaultValue);
+			this.totalToScan.setText("" + defaultValue);
+			this.progressBar.setProgress(defaultValue);
+			this.totalElapsedTime.setText("" + defaultValue);
+		
+			this.choosePath.setDisable(false);
+			this.path.setDisable(false);
+			this.regularExpression.setDisable(false);
+			this.depth.setDisable(false);
+			this.start.setDisable(false);
+			this.maxDepth.setDisable(false);
+			this.reset.setDisable(true);
+			this.resultRows.clear();
+			this.tableView.getItems().clear();
+		});
+	}
+
+	/*
+	 * Changes the status of the window according to passed parameters.
+	 * 
 	 * @param message
 	 * 		Message to show under the button (info, confirm, error...)
 	 * @param isSearching
@@ -350,10 +364,10 @@ public class MainFrame extends GridPane {
 		});
 	}
 	
-	/**
-	 * Check if inputs are not empty and valid
-	 * @return
-	 * 		TRUE if all inputs are valid
+	/*
+	 * Checks if inputs are not empty and valid.
+	 * 
+	 * @return TRUE if all inputs are valid
 	 */
 	private boolean checkInputs() {
 		this.setIdle();
@@ -390,15 +404,14 @@ public class MainFrame extends GridPane {
 		return true;
 	}
 	
-	/**
-	 * Set the right columns, including width and binding
+	/*
+	 * Sets the right columns, including width and binding.
 	 */
 	private void setTableColumns() {
 		//Create two columns
 		final TableColumn<RowType, String> tcPath = new TableColumn<>(PATH_COLUMN_TITLE);
 		final TableColumn<RowType, String> tcValue = new TableColumn<>(VALUE_COLUMN_TITLE);
 		final TableColumn<RowType, String> tcTime = new TableColumn<>(TIME_COLUMN_TITLE);
-		
 		
 		//First is not resizable
 		tcValue.setResizable(false);
@@ -447,7 +460,9 @@ public class MainFrame extends GridPane {
 		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(resultRows));
 	}
 	
-	
+	/*
+	 * Disables the inputs.
+	 */
 	private void setInputDisabled(final boolean isDisabled) {
 		Platform.runLater(() -> {
 			this.choosePath.setDisable(isDisabled);

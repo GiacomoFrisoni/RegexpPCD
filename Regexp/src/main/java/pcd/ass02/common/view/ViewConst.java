@@ -1,5 +1,10 @@
-package pcd.ass02.ex1.view;
+package pcd.ass02.common.view;
 
+/**
+ * This enumeration represents an utility for the management of the
+ * view stages titles.
+ *
+ */
 public enum ViewConst {
 
 	GENERAL_TITLE("Giacomo Frisoni & Marcin Pabich"),
@@ -13,7 +18,11 @@ public enum ViewConst {
 		this.title = title;
 	}
 	
+	/**
+	 * @return the title to display
+	 */
 	public String getTitle() {
 		return this.title;
 	}
+	
 }

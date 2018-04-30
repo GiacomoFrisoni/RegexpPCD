@@ -4,10 +4,14 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import pcd.ass02.ex1.controller.RegexpController;
-import pcd.ass02.ex1.view.MessageUtils;
-import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
+import pcd.ass02.common.controller.RegexpController;
+import pcd.ass02.common.view.MessageUtils;
+import pcd.ass02.common.view.MessageUtils.ExceptionType;
 
+/**
+ * Implementation of {@link RegexpBindingView}.
+ *
+ */
 public class RegexpBindingViewImpl implements RegexpBindingView {
 	
 	private final String windowTitle;
@@ -18,6 +22,7 @@ public class RegexpBindingViewImpl implements RegexpBindingView {
 	/**
 	 * A JavaFX implementation of the view for RegeXP. Require the stage passed
 	 * from the entry point of the application and the window title.
+	 * 
 	 * @param stage
 	 * 		stage passed from the entry point of JavaFX application (usually primaryStage)
 	 */
@@ -28,7 +33,7 @@ public class RegexpBindingViewImpl implements RegexpBindingView {
 
 	
 	@Override
-	public void setController(RegexpController controller) {
+	public void setController(final RegexpController controller) {
 		this.controller = controller;
 	}
 	
@@ -66,8 +71,5 @@ public class RegexpBindingViewImpl implements RegexpBindingView {
 	public void showException(final ExceptionType exceptionType, final String message, final Exception e) {
 		MessageUtils.showExcpetion(exceptionType, message, e);
 	}
-
-
-
 	
 }

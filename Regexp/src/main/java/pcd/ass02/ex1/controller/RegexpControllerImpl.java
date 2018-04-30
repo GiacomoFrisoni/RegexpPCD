@@ -4,7 +4,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import pcd.ass02.ex1.model.RegexpResearchData;
+import pcd.ass02.common.controller.RegexpController;
+import pcd.ass02.common.model.RegexpResearchData;
 import pcd.ass02.ex1.view.RegexpView;
 
 /**
@@ -13,9 +14,9 @@ import pcd.ass02.ex1.view.RegexpView;
  */
 public class RegexpControllerImpl implements RegexpController {
 
-	private static final String INVALID_PATH = "Invalid path";
-	private static final String INVALID_REGEX = "Invalid regular expression syntax";
-	private static final String INVALID_DEPTH = "Invalid max depth value";
+	private static final String INVALID_PATH_MESSAGE = "Invalid path";
+	private static final String INVALID_REGEX_MESSAGE = "Invalid regular expression syntax";
+	private static final String INVALID_DEPTH_MESSAGE = "Invalid max depth value";
 	private static final String EMPTY_REGEX_MESSAGE = "The regular expression is not specified";
 	private static final String EMPTY_PATH_MESSAGE = "The starting path is not specified";
 	
@@ -47,7 +48,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setStartingPath(path);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError(INVALID_PATH);
+			this.view.showInputError(INVALID_PATH_MESSAGE);
 		}
 	}
 
@@ -56,7 +57,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setPattern(regex);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError(INVALID_REGEX);
+			this.view.showInputError(INVALID_REGEX_MESSAGE);
 		}
 	}
 
@@ -65,7 +66,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setMaxDepthNavigation(maxDepth);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError(INVALID_DEPTH);
+			this.view.showInputError(INVALID_DEPTH_MESSAGE);
 		}
 	}
 

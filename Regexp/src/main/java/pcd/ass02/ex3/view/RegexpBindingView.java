@@ -1,8 +1,12 @@
 package pcd.ass02.ex3.view;
 
-import pcd.ass02.ex1.controller.RegexpController;
-import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
+import pcd.ass02.common.controller.RegexpController;
+import pcd.ass02.common.view.MessageUtils.ExceptionType;
 
+/**
+ * This interface represents the View of the application, based on binding.
+ *
+ */
 public interface RegexpBindingView {
 
 	/**
@@ -19,12 +23,12 @@ public interface RegexpBindingView {
 	void show();
 	
 	/**
-	 * When computation is done, set the view to finished state
+	 * When computation is done, sets the view to finished state.
 	 */
 	void setFinish();
 	
 	/**
-	 * Shows an exception when something went wrong
+	 * Shows an exception when something went wrong.
 	 * 
 	 * @param exceptionType
 	 * 		the type of the occurred exception

@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import pcd.ass02.ex1.controller.RegexpController;
-import pcd.ass02.ex1.model.RegexpResearchData;
+import pcd.ass02.common.controller.RegexpController;
+import pcd.ass02.common.model.RegexpResearchData;
 import pcd.ass02.ex3.view.RegexpBindingView;
 
 /**
@@ -14,6 +14,12 @@ import pcd.ass02.ex3.view.RegexpBindingView;
  */
 public class RegexpControllerImpl implements RegexpController {
 
+	private static final String INVALID_PATH_MESSAGE = "Invalid path";
+	private static final String INVALID_REGEX_MESSAGE = "Invalid regular expression syntax";
+	private static final String INVALID_DEPTH_MESSAGE = "Invalid max depth value";
+	private static final String EMPTY_REGEX_MESSAGE = "The regular expression is not specified";
+	private static final String EMPTY_PATH_MESSAGE = "The starting path is not specified";
+	
 	private final RegexpResearchData model;
 	private final RegexpBindingView view;
 	private final ExecutorService executor;
@@ -40,7 +46,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setStartingPath(path);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError("Invalid path");
+			this.view.showInputError(INVALID_PATH_MESSAGE);
 		}
 	}
 
@@ -49,7 +55,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setPattern(regex);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError("Invalid regular expression syntax");
+			this.view.showInputError(INVALID_REGEX_MESSAGE);
 		}
 	}
 
@@ -58,7 +64,7 @@ public class RegexpControllerImpl implements RegexpController {
 		try {
 			this.model.setMaxDepthNavigation(maxDepth);
 		} catch (final IllegalArgumentException e) {
-			this.view.showInputError("Invalid max depth value");
+			this.view.showInputError(INVALID_DEPTH_MESSAGE);
 		}
 	}
 
@@ -70,10 +76,10 @@ public class RegexpControllerImpl implements RegexpController {
 						this.model.getMaxDepth(), this.executor, this.view).start();
 				return true;
 			} else {
-				this.view.showInputError("The regular expression is not specified");
+				this.view.showInputError(EMPTY_REGEX_MESSAGE);
 			}
 		} else {
-			this.view.showInputError("The starting path is not specified");
+			this.view.showInputError(EMPTY_PATH_MESSAGE);
 		}
 		return false;
 	}

@@ -13,9 +13,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
-import pcd.ass02.ex1.model.SearchFileResult;
+import pcd.ass02.common.model.SearchFileResult;
+import pcd.ass02.common.view.MessageUtils.ExceptionType;
 import pcd.ass02.ex1.view.RegexpView;
-import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
 
 /**
  * This class models the Regex Master.
@@ -67,6 +67,7 @@ public class Master {
 	 */
 	public void compute() {
 		final Collection<Future<Void>> results = new HashSet<Future<Void>>();
+		// Searches the paths to analyze and submits a task for each of them.
 		try {
 			Files.walkFileTree(this.startingPath, Collections.emptySet(), this.maxDepth,
 					new RegularFileVisitor(
@@ -75,6 +76,10 @@ public class Master {
 		} catch (final IOException e) {
 			this.view.showException(ExceptionType.IO_EXCEPTION, "Error during the visiting of a file", e);
 		}
+		/*
+		 * Awaits tasks termination.
+		 * It uses a cycle of get in order to reuse the executor.
+		 */
 		for (final Future<Void> result : results) {
 			try {
 				result.get();
@@ -82,6 +87,7 @@ public class Master {
 				this.view.showException(ExceptionType.THREAD_EXCEPTION, "Error during the await termination", e);
 			}
 		}
+		// Stops the consumer with a poison pill at the end of the queue
 		this.queue.add(Consumer.POISON_PILL);
 	}
 	

@@ -1,8 +1,12 @@
 package pcd.ass02.ex1.view;
 
-import pcd.ass02.ex1.controller.RegexpController;
-import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
+import pcd.ass02.common.controller.RegexpController;
+import pcd.ass02.common.view.MessageUtils.ExceptionType;
 
+/**
+ * This interface represents the View of the application.
+ *
+ */
 public interface RegexpView {
 
 	/**
@@ -73,12 +77,20 @@ public interface RegexpView {
 	void showResult(String path, String error);
 	
 	/**
-	 * When computation is done, set the view to finished state
+	 * Shows the total elapsed time for the search service.
+	 * 
+	 * @param time
+	 * 		the total time to display (in milliseconds)
+	 */
+	void showTotalElapsedTime(long time);
+	
+	/**
+	 * When computation is done, sets the view to the finished state.
 	 */
 	void setFinish();
 	
 	/**
-	 * Shows an exception when something went wrong
+	 * Shows an exception when something went wrong.
 	 * 
 	 * @param exceptionType
 	 * 		the type of the occurred exception

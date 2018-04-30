@@ -4,8 +4,9 @@ import java.util.Optional;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import pcd.ass02.ex1.model.SearchFileErrorResult;
-import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
+import pcd.ass02.common.controller.Chrono;
+import pcd.ass02.common.model.SearchFileErrorResult;
+import pcd.ass02.common.model.SearchFileSuccessfulResult;
 import pcd.ass02.ex1.view.RegexpView;
 
 /**
@@ -19,8 +20,8 @@ public class ResultsVerticle extends AbstractVerticle {
 	private int nLeastOneMatch;
 	private double meanNumberOfMatches;
 	private int nComputedFiles;
-	
 	private Optional<Integer> nTotalFiles;
+	private final Chrono totCron;
 
 	/**
 	 * Constructs a new results verticle.
@@ -34,10 +35,13 @@ public class ResultsVerticle extends AbstractVerticle {
 		this.meanNumberOfMatches = 0;
 		this.nComputedFiles = 0;
 		this.nTotalFiles = Optional.empty();
+		this.totCron = new Chrono();
 	}
 
 	@Override
 	public void start(final Future<Void> done) throws Exception {
+		this.totCron.start();
+		
 		// Handles results and shows them across the view
 		vertx.eventBus().consumer("result", message -> {
 			if (message.body() instanceof SearchFileSuccessfulResult) {
@@ -62,19 +66,25 @@ public class ResultsVerticle extends AbstractVerticle {
 			this.view.showLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)nComputedFiles);
 			// Shows analysis progress on view
 			this.view.setNumberOfScannedFiles(++this.nComputedFiles);
-			
+			// If all the results have been shown, destroys itself
 			this.nTotalFiles.ifPresent(total -> {
 				if (this.nComputedFiles == total) {
+					this.totCron.stop();
+					this.view.showTotalElapsedTime(this.totCron.getTime());
 					this.view.setFinish();
 					vertx.undeploy(this.deploymentID());
 					vertx.eventBus().send("end", null);
 				}
 			});
 		});
-		// Destroys itself when the end message is received
+		
+		// Sets the total number of files to handle
 		vertx.eventBus().consumer("totalFiles", message -> {
 			this.nTotalFiles = Optional.of((int)message.body());
+			// If all the results have been shown, destroys itself
 			if (this.nComputedFiles == this.nTotalFiles.get()) {
+				this.totCron.stop();
+				this.view.showTotalElapsedTime(this.totCron.getTime());
 				this.view.setFinish();
 				vertx.undeploy(this.deploymentID());
 				vertx.eventBus().send("end", null);

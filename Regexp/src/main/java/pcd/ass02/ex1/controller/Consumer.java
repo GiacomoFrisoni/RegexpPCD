@@ -4,25 +4,30 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 
-import pcd.ass02.ex1.model.SearchFileErrorResult;
-import pcd.ass02.ex1.model.SearchFileResult;
-import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
-import pcd.ass02.ex1.view.MessageUtils.ExceptionType;
+import pcd.ass02.common.controller.Chrono;
+import pcd.ass02.common.model.SearchFileErrorResult;
+import pcd.ass02.common.model.SearchFileResult;
+import pcd.ass02.common.model.SearchFileSuccessfulResult;
+import pcd.ass02.common.view.MessageUtils.ExceptionType;
 import pcd.ass02.ex1.view.RegexpView;
 
 /**
  * This class models a Regexp Consumer.
  * It picks up the results of the task computations from the buffer, calculates some statistics
  * and shows them on video as soon as they are available.
+ * It uses a queue and it is launched on a new thread in order to handle the results as soon as
+ * they are available.
  *
  */
 public class Consumer extends Thread {
 	
 	public static final Optional<SearchFileResult> POISON_PILL = Optional.empty();
+	
 	private static final String INTERRUPTION_MESSAGE = "Someone interrupted the consumer when was waiting for something";
 	
 	private final BlockingQueue<Optional<SearchFileResult>> queue;
 	private final RegexpView view;
+	private final Chrono totCron;
 	
 	private int nLeastOneMatch;
 	private double meanNumberOfMatches;
@@ -41,6 +46,7 @@ public class Consumer extends Thread {
 		Objects.requireNonNull(view);
 		this.queue = queue;
 		this.view = view;
+		this.totCron = new Chrono();
 		this.nLeastOneMatch = 0;
 		this.meanNumberOfMatches = 0;
 		this.foundedPoisonPill = false;
@@ -50,6 +56,8 @@ public class Consumer extends Thread {
 	public void run() {
 		int nComputedFiles = 0;
 		Optional<SearchFileResult> element;
+		// Starts total timer
+		this.totCron.start();
 		while (!this.foundedPoisonPill) {
 			try {
 				element = this.queue.take();
@@ -89,6 +97,8 @@ public class Consumer extends Thread {
 				this.view.showException(ExceptionType.THREAD_EXCEPTION, INTERRUPTION_MESSAGE, ie);
 			}
 		}
+		this.totCron.stop();
+		this.view.showTotalElapsedTime(this.totCron.getTime());
 		this.view.setFinish();
 	}
 	

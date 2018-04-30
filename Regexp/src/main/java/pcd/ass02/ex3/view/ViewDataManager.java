@@ -3,13 +3,19 @@ package pcd.ass02.ex3.view;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import pcd.ass02.ex1.view.RowType;
+import pcd.ass02.common.view.RowType;
 
+/**
+ * This class handles the properties on which the view bindings its controls.
+ * It uses the Singleton pattern.
+ *
+ */
 public class ViewDataManager {
 
 	private static volatile ViewDataManager singleton;
@@ -56,7 +62,8 @@ public class ViewDataManager {
 	// Number of visited files handler
     
     /**
-     * Set the number of visited files
+     * Sets the number of visited files.
+     * 
      * @param value
      * 		number of visited files
      */
@@ -71,9 +78,9 @@ public class ViewDataManager {
 	}
 	
 	/**
-	 * Get the property of number of visited files ready to bind
-	 * @return
-	 * 		property ready to bind
+	 * Gets the property associated to the number of visited files, ready to bind.
+	 * 
+	 * @return property ready to bind
 	 */
 	public IntegerProperty numberOfVisitedFilesProperty() {
 		return this.nVisitedFiles;
@@ -83,14 +90,14 @@ public class ViewDataManager {
 	// Number of computed files handler
 	
     /**
-     * Set the number of computed files (scanned and parsed)
+     * Sets the number of computed files (scanned and parsed).
+     * 
      * @param value
      * 		number of computed files
      */
 	public void setNumberOfComputedFiles(final int value) {
 		Platform.runLater(() -> {
 			this.nComputedFiles.set(value);
-			
 			if (this.nVisitedFiles.get() > 0) {
 				this.progress.set(((double)this.nComputedFiles.get()) / ((double)this.nVisitedFiles.get()));
 			}
@@ -98,9 +105,9 @@ public class ViewDataManager {
 	}
 	
 	/**
-	 * Get the property of number of computed files ready to bind
-	 * @return
-	 * 		property ready to bind
+	 * Gets the property associated to the number of computed files, ready to bind.
+	 * 
+	 * @return property ready to bind
 	 */
 	public IntegerProperty numberOfComputedFilesProperty() {
 		return this.nComputedFiles;
@@ -110,7 +117,8 @@ public class ViewDataManager {
 	// Mean number of matches handler
 	
     /**
-     * Set the mean number of matches
+     * Sets the mean number of matches.
+     * 
      * @param value
      * 		mean number of matches
      */
@@ -119,19 +127,20 @@ public class ViewDataManager {
 	}
 
 	/**
-	 * Get the property of mean number of matches ready to bind
-	 * @return
-	 * 		property ready to bind
+	 * Gets the property associated to the mean number of matches, ready to bind.
+	 * 
+	 * @return property ready to bind
 	 */
 	public DoubleProperty meanNumberOfMatchesProperty() {
 		return this.meanNumberOfMatches;
 	}
 	
 	
-	// Least one match percentage
+	// Least one match percentage handler
 
     /**
-     * Set the percentage of files that have at least one match.
+     * Sets the percentage of files that have at least one match.
+     * 
      * @param value
      * 		mean number of matches
      */
@@ -140,17 +149,20 @@ public class ViewDataManager {
 	}
 
 	/**
-	 * Get the percentage of files that have at least one match ready to bind
-	 * @return
-	 * 		property ready to bind
+	 * Gets the property associated to the percentage of files that have at least one match, ready to bind.
+	 * 
+	 * @return property ready to bind
 	 */
 	public DoubleProperty leastOneMatchPercentageProperty() {
 		return this.leastOneMatchPercentage;
 	}
 	
-	// List of data
+	
+	// List of results data handler
+	
 	/**
-	 * Add a result to list
+	 * Adds a result to list.
+	 * 
 	 * @param path
 	 * 		path of the computed file
 	 * @param nMatches
@@ -160,11 +172,11 @@ public class ViewDataManager {
 	 */
 	public void addResult(final String path, final int nMatches, final long time) {
 		this.resultRows.add(new RowType(path, "" + nMatches, time));
-		Platform.runLater(() -> this.totalElapsedTime.set(this.totalElapsedTime.get() + time));
 	}
 	
 	/**
-	 * Add a result to list, when computation of the file was unsuccessful
+	 * Adds a result to list, when computation of the file was unsuccessful.
+	 * 
 	 * @param path
 	 * 		path of the computed file
 	 * @param message
@@ -175,35 +187,57 @@ public class ViewDataManager {
 	}
 	
 	/**
-	 * Return an observable collection of result items
-	 * @return
-	 * 		observable collection of result items
+	 * @return an observable collection of result items.
 	 */
 	public ObservableList<RowType> getResultList() {
 		return this.resultRows;
 	}
 	
 	
-	//Total time
+	// Total elapsed time handler
 	
 	/**
-	 * Get the total elapsed time property ready to bind
-	 * @return
-	 * 		total elapsed time property
+     * Sets the mean number of matches.
+     * 
+     * @param value
+     * 		mean number of matches
+     */
+	public void setTotalElapsedTime(final long value) {
+		Platform.runLater(() -> this.totalElapsedTime.set(value));
+	}
+
+	/**
+	 * Gets the property of mean number of matches, ready to bind.
+	 * 
+	 * @return property ready to bind
 	 */
-	public SimpleLongProperty getTotalElapsedTimeProperty() {
+	public LongProperty totalElapsedTimeProperty() {
 		return this.totalElapsedTime;
 	}
 	
-	//Progress
+	
+	// Progress handler
 	
 	/**
-	 * Get the progress property ready to bind
-	 * @return
-	 * 		progress property
+	 * Gets the progress property ready to bind.
+	 * 
+	 * @return progress property
 	 */
-	public SimpleDoubleProperty getProgressProperty() {
+	public SimpleDoubleProperty progressProperty() {
 		return this.progress;
+	}
+	
+	
+	// Reset
+	
+	public void reset() {
+		this.nVisitedFiles.set(0);
+		this.nComputedFiles.set(0);
+		this.totalElapsedTime.set(0);
+		this.leastOneMatchPercentage.set(0.0);
+		this.meanNumberOfMatches.set(0.0);
+		this.progress.set(0.0);
+		this.resultRows.clear();
 	}
 	
 }

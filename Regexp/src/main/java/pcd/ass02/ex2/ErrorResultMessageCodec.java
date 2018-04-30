@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;
-import pcd.ass02.ex1.model.SearchFileErrorResult;
+import pcd.ass02.common.model.SearchFileErrorResult;
 
 /**
  * This class defines a custom message codec in order to send error results

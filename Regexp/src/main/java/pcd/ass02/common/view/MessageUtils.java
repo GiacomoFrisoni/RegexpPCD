@@ -1,4 +1,4 @@
-package pcd.ass02.ex1.view;
+package pcd.ass02.common.view;
 
 import java.util.function.Consumer;
 
@@ -7,8 +7,18 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 
+/**
+ * This class represents an utility for the visualization of messages inside the view.
+ *
+ */
 public class MessageUtils {
 	
+	/**
+	 * This enumeration represents the possible types of exception
+	 * that can happen and the header message that must be shown
+	 * for each of them.
+	 *
+	 */
 	public enum ExceptionType {
 		
 		FXML_EXCEPTION("FXML Loading Exception"),
@@ -31,7 +41,8 @@ public class MessageUtils {
 	public static final String FXML_ERROR_MESSAGE = "could not be loaded";
 	
 	/**
-	 * Show a dialog. Thread-Safe (using Platform.runLater)
+	 * Shows a thread-safe (using Platform.runLater) dialog.
+	 * 
 	 * @param type
 	 * 		type of the dialog (info, warning, error)
 	 * @param title
@@ -45,7 +56,8 @@ public class MessageUtils {
 	 * @param action
 	 * 		action performed on button pressed
 	 */
-	public static void showMessage(final AlertType type, final String title, final String header, final String message, final String additional, Consumer<ButtonType> action) {
+	public static void showMessage(final AlertType type, final String title, final String header,
+			final String message, final String additional, final Consumer<ButtonType> action) {
 		Platform.runLater(() ->{
 			final Alert alert = new Alert(type);
 			alert.setTitle(title);
@@ -69,6 +81,14 @@ public class MessageUtils {
 		});
 	}
 	
+	/**
+	 * Shows an FXML exception.
+	 * 
+	 * @param component
+	 * 		the component
+	 * @param e
+	 * 		the occurred exception
+	 */
 	public static void showFXMLException(final String component, final Exception e) {
 		if (e != null) {
 			showMessage(AlertType.ERROR, ERROR_TITLE, ExceptionType.FXML_EXCEPTION.getHeader(), component + " " + FXML_ERROR_MESSAGE, e.getMessage(), null);
@@ -77,6 +97,16 @@ public class MessageUtils {
 		}
 	}
 	
+	/**
+	 * Shows an exception.
+	 * 
+	 * @param exceptionType
+	 * 		the type of the exception
+	 * @param message
+	 * 		the message to display
+	 * @param e
+	 * 		the occurred exception
+	 */
 	public static void showExcpetion(final ExceptionType exceptionType, final String message, final Exception e) {
 		if (e != null) {
 			showMessage(AlertType.ERROR, ERROR_TITLE, exceptionType.getHeader(), message, e.getMessage(), null);
@@ -84,4 +114,5 @@ public class MessageUtils {
 			showMessage(AlertType.ERROR, ERROR_TITLE, exceptionType.getHeader(), message, "", null);
 		}	
 	}
+	
 }

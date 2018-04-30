@@ -1,4 +1,4 @@
-package pcd.ass02.ex1.model;
+package pcd.ass02.common.model;
 
 import java.nio.file.Path;
 

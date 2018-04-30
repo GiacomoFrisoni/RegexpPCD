@@ -10,9 +10,9 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.FileSystem;
-import pcd.ass02.ex1.controller.Chrono;
-import pcd.ass02.ex1.model.SearchFileErrorResult;
-import pcd.ass02.ex1.model.SearchFileSuccessfulResult;
+import pcd.ass02.common.controller.Chrono;
+import pcd.ass02.common.model.SearchFileErrorResult;
+import pcd.ass02.common.model.SearchFileSuccessfulResult;
 
 /**
  * This {@link AbstractVerticle} represents the event loop for the research of the regex
@@ -29,6 +29,7 @@ public class MatcherVerticle extends AbstractVerticle {
 		final Pattern pattern = new Gson().fromJson(config().getString("pattern"), Pattern.class);
 		final FileSystem fs = vertx.fileSystem();
 		final Chrono cron = new Chrono();
+		
 		// Search pattern matches
 		vertx.eventBus().consumer("fileToAnalyze", message -> {
 			final String path = (String) message.body();
@@ -55,6 +56,7 @@ public class MatcherVerticle extends AbstractVerticle {
 				}
 			});
 		});
+		
 		// Destroys itself when the end message is received
 		vertx.eventBus().consumer("end", message -> {
 			vertx.undeploy(this.deploymentID());

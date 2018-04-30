@@ -20,10 +20,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import pcd.ass02.ex1.controller.RegexpController;
-import pcd.ass02.ex1.view.MessageUtils;
-import pcd.ass02.ex1.view.RowType;
+import pcd.ass02.common.controller.RegexpController;
+import pcd.ass02.common.view.MessageUtils;
+import pcd.ass02.common.view.RowType;
 
+/**
+ * This class handles the view scene, using a grid pane layout
+ * and property bindings.
+ *
+ */
 public class MainBindingFrame extends GridPane {
 	
 	private static final int WIDTH = 800;
@@ -47,6 +52,7 @@ public class MainBindingFrame extends GridPane {
 	private static final String TIME_PROPERTY_NAME = "elapsedTime";
 	
 	private static final String DOUBLE_FORMAT = "%.2f";
+	private static final int MULTIPLY_PERCENTAGE_FACTOR = 100;
 	
 	private final RegexpController controller;
 	private final Stage window;
@@ -76,7 +82,7 @@ public class MainBindingFrame extends GridPane {
 		this.window = window;
 		
     	//Load the FXML definition
-		final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("..\\..\\ex1\\view\\MainFrame.fxml"));
+		final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("..\\..\\common\\view\\MainFrame.fxml"));
 		fxmlLoader.setRoot(this);
 		fxmlLoader.setController(this);
 		
@@ -89,7 +95,7 @@ public class MainBindingFrame extends GridPane {
         }
         
         //Set view
-        this.getStylesheets().add(getClass().getResource("..\\..\\ex1\\view\\style.css").toExternalForm());
+        this.getStylesheets().add(getClass().getResource("..\\..\\common\\view\\style.css").toExternalForm());
         this.setDimensions();
         this.setEventHandlers();
         this.setTableColumns();
@@ -98,10 +104,11 @@ public class MainBindingFrame extends GridPane {
         //Set bindings
         this.totalToScan.textProperty().bind(ViewDataManager.getHandler().numberOfVisitedFilesProperty().asString());
         this.currentScanned.textProperty().bind(ViewDataManager.getHandler().numberOfComputedFilesProperty().asString());
-        this.leastOneMatchPercentage.textProperty().bind(ViewDataManager.getHandler().leastOneMatchPercentageProperty().multiply(100.0).asString(DOUBLE_FORMAT));
+        this.leastOneMatchPercentage.textProperty().bind(ViewDataManager.getHandler().leastOneMatchPercentageProperty()
+        		.multiply(MULTIPLY_PERCENTAGE_FACTOR).asString(DOUBLE_FORMAT).concat(PERCENTAGE_SYMBOL));
         this.meanNumberOfMatches.textProperty().bind(ViewDataManager.getHandler().meanNumberOfMatchesProperty().asString(DOUBLE_FORMAT));
-        this.totalElapsedTime.textProperty().bind(ViewDataManager.getHandler().getTotalElapsedTimeProperty().asString());
-        this.progressBar.progressProperty().bind(ViewDataManager.getHandler().getProgressProperty());
+        this.totalElapsedTime.textProperty().bind(ViewDataManager.getHandler().totalElapsedTimeProperty().asString());
+        this.progressBar.progressProperty().bind(ViewDataManager.getHandler().progressProperty());
 	}
 	
 	private void setDimensions() {
@@ -191,7 +198,7 @@ public class MainBindingFrame extends GridPane {
 	}
 	
 	/**
-	 * Sets the view as done when computation finished
+	 * Sets the view as done when computation finished.
 	 */
 	public void setFinish() {
 		this.changeStatus(FINISH_MESSAGE, false, false);
@@ -199,21 +206,21 @@ public class MainBindingFrame extends GridPane {
 	}
 	
 	/**
-	 * Reset all the view
+	 * Resets all the view.
 	 */
 	public void reset() {
 		this.changeStatus(IDLE_MESSAGE, false, false);
-		Platform.runLater(() -> {		
+		Platform.runLater(() -> {
+			// Resets input
 			this.path.clear();
 			this.regularExpression.clear();
 			this.depth.setText("1");
 			this.maxDepth.setSelected(false);
-			this.leastOneMatchPercentage.setText(defaultValue + PERCENTAGE_SYMBOL);
-			this.meanNumberOfMatches.setText("" + defaultValue);
-			this.currentScanned.setText("" + defaultValue);
-			this.totalToScan.setText("" + defaultValue);
-			this.progressBar.setProgress(defaultValue);
+			
+			// Resets label data binding
+			ViewDataManager.getHandler().reset();
 		
+			// Resets input enabling
 			this.choosePath.setDisable(false);
 			this.path.setDisable(false);
 			this.regularExpression.setDisable(false);
@@ -226,8 +233,9 @@ public class MainBindingFrame extends GridPane {
 	}
 	
 
-	/**
-	 * Change the status of the window according to passed parameters
+	/*
+	 * Changes the status of the window according to passed parameters.
+	 * 
 	 * @param message
 	 * 		Message to show under the button (info, confirm, error...)
 	 * @param isSearching
@@ -252,10 +260,10 @@ public class MainBindingFrame extends GridPane {
 		});
 	}
 	
-	/**
-	 * Check if inputs are not empty and valid
-	 * @return
-	 * 		TRUE if all inputs are valid
+	/*
+	 * Checks if inputs are not empty and valid.
+	 * 
+	 * @return TRUE if all inputs are valid
 	 */
 	private boolean checkInputs() {
 		this.setIdle();
@@ -292,8 +300,8 @@ public class MainBindingFrame extends GridPane {
 		return true;
 	}
 	
-	/**
-	 * Set the right columns, including width and binding
+	/*
+	 * Sets the right columns, including width and binding.
 	 */
 	private void setTableColumns() {
 		//Create two columns
@@ -349,7 +357,9 @@ public class MainBindingFrame extends GridPane {
 		this.tableView.itemsProperty().bind(new SimpleObjectProperty<>(ViewDataManager.getHandler().getResultList()));
 	}
 	
-	
+	/*
+	 * Disables the inputs.
+	 */
 	private void setInputDisabled(final boolean isDisabled) {
 		Platform.runLater(() -> {
 			this.choosePath.setDisable(isDisabled);

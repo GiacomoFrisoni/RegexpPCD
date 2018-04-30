@@ -1,7 +1,7 @@
-package pcd.ass02.ex1.controller;
+package pcd.ass02.common.controller;
 
 /**
- * This class represents the Controller of the application.
+ * This interface represents the Controller of the application.
  *
  */
 public interface RegexpController {

@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
 
-import pcd.ass02.ex1.model.SearchFileResult;
+import pcd.ass02.common.model.SearchFileResult;
 import pcd.ass02.ex1.view.RegexpView;
 
 /**
