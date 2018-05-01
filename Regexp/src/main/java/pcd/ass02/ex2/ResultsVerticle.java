@@ -62,10 +62,10 @@ public class ResultsVerticle extends AbstractVerticle {
 				this.view.showResult(errorRes.getPath().toString(), errorRes.getErrorMessage());
 			}
 			// Shows statistics on view
+			this.view.setNumberOfScannedFiles(++this.nComputedFiles);
 			this.view.showMeanNumberOfMatches(this.meanNumberOfMatches);
 			this.view.showLeastOneMatchPercentage((double)this.nLeastOneMatch / (double)nComputedFiles);
-			// Shows analysis progress on view
-			this.view.setNumberOfScannedFiles(++this.nComputedFiles);
+
 			// If all the results have been shown, destroys itself
 			this.nTotalFiles.ifPresent(total -> {
 				if (this.nComputedFiles == total) {

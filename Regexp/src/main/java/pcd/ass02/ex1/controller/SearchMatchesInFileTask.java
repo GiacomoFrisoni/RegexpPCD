@@ -1,6 +1,8 @@
 package pcd.ass02.ex1.controller;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,6 +26,9 @@ public class SearchMatchesInFileTask implements Callable<Void> {
 
 	private final static long MAX_FILE_SIZE = 262144000;
 	private final static String FILE_TOO_LARGE_MESSAGE = "Too large to analyze";
+	private final static String ACCESS_DENIED_MESSAGE = "Access denied";
+	private final static String ALREADY_IN_USE_MESSAGE = "Already in use";
+	private final static String GENERIC_ERROR_MESSAGE = "IO exception";
 	
 	private final Path filePath;
 	private final Pattern pattern;
@@ -71,7 +76,13 @@ public class SearchMatchesInFileTask implements Callable<Void> {
 			}
 		} catch (final IOException e) {
 			// Adds an error result in the queue
-			this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, e.getLocalizedMessage())));
+			if (e instanceof AccessDeniedException) {
+				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, ACCESS_DENIED_MESSAGE)));
+			} else if (e instanceof FileSystemException){
+				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, ALREADY_IN_USE_MESSAGE)));
+			} else {
+				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, GENERIC_ERROR_MESSAGE)));
+			}		
 		} 
 		return null;
 	}
