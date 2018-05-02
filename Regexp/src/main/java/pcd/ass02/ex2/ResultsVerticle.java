@@ -72,8 +72,8 @@ public class ResultsVerticle extends AbstractVerticle {
 					this.totCron.stop();
 					this.view.showTotalElapsedTime(this.totCron.getTime());
 					this.view.setFinish();
+					vertx.eventBus().publish("end", null);
 					vertx.undeploy(this.deploymentID());
-					vertx.eventBus().send("end", null);
 				}
 			});
 		});
@@ -86,8 +86,8 @@ public class ResultsVerticle extends AbstractVerticle {
 				this.totCron.stop();
 				this.view.showTotalElapsedTime(this.totCron.getTime());
 				this.view.setFinish();
+				vertx.eventBus().publish("end", null);
 				vertx.undeploy(this.deploymentID());
-				vertx.eventBus().send("end", null);
 			}
 		});
 	}

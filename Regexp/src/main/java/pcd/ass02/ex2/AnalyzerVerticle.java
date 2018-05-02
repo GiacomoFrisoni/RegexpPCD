@@ -65,7 +65,7 @@ public class AnalyzerVerticle extends AbstractVerticle {
 						ANALYSIS_EXCEPTION_MESSAGE,
 						new Exception(handler.cause()));
 			} else {
-				this.vertx.eventBus().send("totalFiles", this.nVisitedFiles);
+				vertx.eventBus().send("totalFiles", this.nVisitedFiles);
 			}
 		});
 		
