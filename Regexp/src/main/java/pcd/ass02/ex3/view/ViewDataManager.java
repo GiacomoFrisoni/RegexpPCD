@@ -171,7 +171,7 @@ public class ViewDataManager {
 	 * 		elapsed time to parse it
 	 */
 	public void addResult(final String path, final int nMatches, final long time) {
-		this.resultRows.add(new RowType(path, "" + nMatches, time));
+		Platform.runLater(() -> this.resultRows.add(new RowType(path, "" + nMatches, time)));
 	}
 	
 	/**
@@ -183,7 +183,7 @@ public class ViewDataManager {
 	 * 		short message for the error
 	 */
 	public void addResult(final String path, final String message) {
-		this.resultRows.add(new RowType(path, message, 0));
+		Platform.runLater(() -> this.resultRows.add(new RowType(path, message, 0)));
 	}
 	
 	/**
@@ -231,13 +231,15 @@ public class ViewDataManager {
 	// Reset
 	
 	public void reset() {
-		this.nVisitedFiles.set(0);
-		this.nComputedFiles.set(0);
-		this.totalElapsedTime.set(0);
-		this.leastOneMatchPercentage.set(0.0);
-		this.meanNumberOfMatches.set(0.0);
-		this.progress.set(0.0);
-		this.resultRows.clear();
+		Platform.runLater(() -> {
+			this.nVisitedFiles.set(0);
+			this.nComputedFiles.set(0);
+			this.totalElapsedTime.set(0);
+			this.leastOneMatchPercentage.set(0.0);
+			this.meanNumberOfMatches.set(0.0);
+			this.progress.set(0.0);
+			this.resultRows.clear();
+		});
 	}
 	
 }
