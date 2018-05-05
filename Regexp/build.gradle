@@ -3,10 +3,14 @@ apply plugin: 'java-library'
 
 ext {
 	vertxVersion = '3.5.0'
+	gsonVersion = '2.8.2'
+	rxjavaVersion = '2.1.12'
+	log4jVersion = '2.11.0'
 }
 
 repositories {
 	jcenter()
+	mavenCentral()
 }
 
 dependencies {
@@ -15,12 +19,12 @@ dependencies {
 	compile "io.vertx:vertx-unit:$vertxVersion"
 	
 	// Google Gson
-	compile "com.google.code.gson:gson:2.8.2"
+	compile "com.google.code.gson:gson:$gsonVersion"
 	
 	// RxJava 2.1.12 
-	compile "io.reactivex.rxjava2:rxjava:2.1.12"
+	compile "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
 	
 	// Log4j
-	compile group: 'org.apache.log4j', name: 'log4j-api', version: '2.11.0'
-  	compile group: 'org.apache.log4j', name: 'log4j-core', version: '2.11.0'
+	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: "$log4jVersion"
+	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: "$log4jVersion"
 }
