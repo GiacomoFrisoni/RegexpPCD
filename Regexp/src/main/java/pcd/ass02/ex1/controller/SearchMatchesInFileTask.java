@@ -11,6 +11,9 @@ import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import pcd.ass02.common.controller.Chrono;
 import pcd.ass02.common.model.SearchFileErrorResult;
 import pcd.ass02.common.model.SearchFileResult;
@@ -29,10 +32,13 @@ public class SearchMatchesInFileTask implements Callable<Void> {
 	private final static String ACCESS_DENIED_MESSAGE = "Access denied";
 	private final static String ALREADY_IN_USE_MESSAGE = "Already in use";
 	private final static String GENERIC_ERROR_MESSAGE = "IO exception";
+	private final static String WAITING_INTERRUPTED_MESSAGE = "Interrupted while waiting";
 	
 	private final Path filePath;
 	private final Pattern pattern;
 	private final BlockingQueue<Optional<SearchFileResult>> queue;
+	
+	private final Logger logger;
 	
 	/**
 	 * Constructs a new file matcher research task.
@@ -52,6 +58,7 @@ public class SearchMatchesInFileTask implements Callable<Void> {
 		this.filePath = filePath;
 		this.pattern = pattern;
 		this.queue = queue;
+		this.logger = LogManager.getLogger();
 	}
 	
 	@Override
@@ -69,21 +76,27 @@ public class SearchMatchesInFileTask implements Callable<Void> {
 		        	nMatches++;
 				cron.stop();
 				// Adds a successful result in the queue
-				this.queue.add(Optional.of(new SearchFileSuccessfulResult(this.filePath, nMatches, cron.getTime())));
+				this.queue.put(Optional.of(new SearchFileSuccessfulResult(this.filePath, nMatches, cron.getTime())));
 			} else {
 				// Adds an error result in the queue
-				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, FILE_TOO_LARGE_MESSAGE)));
+				this.queue.put(Optional.of(new SearchFileErrorResult(this.filePath, FILE_TOO_LARGE_MESSAGE)));
 			}
 		} catch (final IOException e) {
-			// Adds an error result in the queue
-			if (e instanceof AccessDeniedException) {
-				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, ACCESS_DENIED_MESSAGE)));
-			} else if (e instanceof FileSystemException){
-				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, ALREADY_IN_USE_MESSAGE)));
-			} else {
-				this.queue.add(Optional.of(new SearchFileErrorResult(this.filePath, GENERIC_ERROR_MESSAGE)));
-			}		
-		} 
+			try {
+				// Adds an error result in the queue
+				if (e instanceof AccessDeniedException) {
+					this.queue.put(Optional.of(new SearchFileErrorResult(this.filePath, ACCESS_DENIED_MESSAGE)));
+				} else if (e instanceof FileSystemException){
+					this.queue.put(Optional.of(new SearchFileErrorResult(this.filePath, ALREADY_IN_USE_MESSAGE)));
+				} else {
+					this.queue.put(Optional.of(new SearchFileErrorResult(this.filePath, GENERIC_ERROR_MESSAGE)));
+				}
+			} catch(final InterruptedException ie) {
+				this.logger.warn(WAITING_INTERRUPTED_MESSAGE + "\n" + ie.getMessage());
+			}
+		} catch (final InterruptedException ie) {
+			this.logger.warn(WAITING_INTERRUPTED_MESSAGE + "\n" + ie.getMessage());
+		}
 		return null;
 	}
 

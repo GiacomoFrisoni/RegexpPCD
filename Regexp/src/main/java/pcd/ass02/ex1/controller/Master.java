@@ -13,6 +13,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import pcd.ass02.common.model.SearchFileResult;
 import pcd.ass02.common.view.MessageUtils.ExceptionType;
 import pcd.ass02.ex1.view.RegexpView;
@@ -30,6 +33,8 @@ public class Master {
 	private final int maxDepth;
 	private final BlockingQueue<Optional<SearchFileResult>> queue;
 	private final RegexpView view;
+	
+	private final Logger logger;
 	
 	/**
 	 * Creates a new Master.
@@ -60,6 +65,7 @@ public class Master {
 		this.executor = executor;
 		this.queue = queue;
 		this.view = view;
+		this.logger = LogManager.getLogger();
 	}
 	
 	/**
@@ -88,7 +94,11 @@ public class Master {
 			}
 		}
 		// Stops the consumer with a poison pill at the end of the queue
-		this.queue.add(Consumer.POISON_PILL);
+		try {
+			this.queue.put(Consumer.POISON_PILL);
+		} catch (final InterruptedException e) {
+			this.logger.warn("Master interrupted while waiting for free space in the queue\n" + e.getMessage());
+		}
 	}
 	
 }

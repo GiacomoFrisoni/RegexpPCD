@@ -33,13 +33,14 @@ public class MatcherVerticle extends AbstractVerticle {
 		// Search pattern matches
 		vertx.eventBus().consumer("fileToAnalyze", message -> {
 			final String path = (String) message.body();
-			cron.start();
+			
 			fs.readFile(path, readFileHandler -> {
 				if (readFileHandler.failed()) {
 					vertx.eventBus().send("result", new SearchFileErrorResult(Paths.get(path),
 							readFileHandler.cause().getLocalizedMessage()));
 				} else {
 					final Buffer buffer = readFileHandler.result();
+					cron.start();
 					vertx.<Integer>executeBlocking(blockingHandler -> {
 						final Matcher matcher = pattern.matcher(buffer.toString());
 						int nMatches = 0;
@@ -47,7 +48,9 @@ public class MatcherVerticle extends AbstractVerticle {
 							nMatches++;
 						cron.stop();
 						blockingHandler.complete(nMatches);
-					}, resultHandler -> {
+					},
+					false,
+					resultHandler -> {
 						if (resultHandler.succeeded()) {
 							vertx.eventBus().send("result", new SearchFileSuccessfulResult(Paths.get(path),
 									resultHandler.result().intValue(), cron.getTime()));
